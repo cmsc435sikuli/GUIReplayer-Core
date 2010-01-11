@@ -1,0 +1,15 @@
+  -d .
+  -sourcepath .
+  -breakiterator
+  -generic
+  -umlautogen
+  -author
+  -docletpath C:/ydoc-3.0_01-jdk1.5/lib/ydoc.jar;C:/ydoc-3.0_01-jdk1.5/resources
+  -doclet ydoc.doclets.YStandard
+  -filterpath C:/ydoc-3.0_01-jdk1.5/lib/ydoc.jar
+  -filter ydoc.filters.ExcludeFilter
+  -tagletpath C:/ydoc-3.0_01-jdk1.5/lib/ydoc.jar
+  -tag param
+  -tag return
+  -tag see
+  -ytag y.uml
