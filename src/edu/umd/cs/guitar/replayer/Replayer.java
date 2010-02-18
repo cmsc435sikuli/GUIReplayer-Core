@@ -318,10 +318,10 @@ public class Replayer {
 
         GUITARLog.log.info("Finding widget *" + sWidgetID + "*.... ");
 
-        GUITARLog.log.debug("Componnent signature: ");
-        for (PropertyTypeWrapper p : IDAdapter) {
-            GUITARLog.log.debug(p.toString());
-        }
+		// GUITARLog.log.debug("Componnent signature: ");
+		// for (PropertyTypeWrapper p : IDAdapter) {
+		// GUITARLog.log.debug(p.toString());
+		// }
 
         GComponent gComponent = containter.getFirstChild(IDAdapter);
 
