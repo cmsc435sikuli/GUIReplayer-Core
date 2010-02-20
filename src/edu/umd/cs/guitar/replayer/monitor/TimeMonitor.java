@@ -31,86 +31,91 @@ import edu.umd.cs.guitar.util.GUITARLog;
  */
 public class TimeMonitor extends GTestMonitor {
 
-    int nStepTimeout = 0;
-    int nTestcaseTimeout = 0;
-    private Timer tStepTimer;
-    long nStartTime;
-    long nEndTime;
+	int nStepTimeout = 0;
+	int nTestcaseTimeout = 0;
+	private Timer tStepTimer;
+	long nStartTime;
+	long nEndTime;
 
-    /**
-     * @param nStepTimeout
-     * @param nTestcaseTimeout
-     */
-    public TimeMonitor(int nStepTimeout, int nTestcaseTimeout) {
-        super();
-        this.nStepTimeout = nStepTimeout;
-        this.nTestcaseTimeout = nTestcaseTimeout;
+	/**
+	 * @param nStepTimeout
+	 * @param nTestcaseTimeout
+	 */
+	public TimeMonitor(int nStepTimeout, int nTestcaseTimeout) {
+		super();
+		this.nStepTimeout = nStepTimeout;
+		this.nTestcaseTimeout = nTestcaseTimeout;
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.guitar.replayer.monitor.GTestMonitor#afterStep(edu.umd.cs.
-     * guitar.replayer.monitor.TestStepEventArgs)
-     */
-    @Override
-    public void afterStep(TestStepEndEventArgs arg0) {
-        GUITARLog.log.info(tStepTimer.getTimerName() + " elapsed Time: "
-                + tStepTimer.getElapsedTime());
-        tStepTimer.stopTimer();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.umd.cs.guitar.replayer.monitor.GTestMonitor#afterStep(edu.umd.cs.
+	 * guitar.replayer.monitor.TestStepEventArgs)
+	 */
+	@Override
+	public void afterStep(TestStepEndEventArgs arg0) {
+		GUITARLog.log.info(tStepTimer.getTimerName() + " elapsed Time: "
+				+ tStepTimer.getElapsedTime());
+		tStepTimer.stopTimer();
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.guitar.replayer.monitor.GTestMonitor#beforeStep(edu.umd.cs
-     * .guitar.replayer.monitor.TestStepEventArgs)
-     */
-    @Override
-    public void beforeStep(TestStepStartEventArgs arg0) {
-        tStepTimer.startTimer();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.umd.cs.guitar.replayer.monitor.GTestMonitor#beforeStep(edu.umd.cs
+	 * .guitar.replayer.monitor.TestStepEventArgs)
+	 */
+	@Override
+	public void beforeStep(TestStepStartEventArgs arg0) {
+		tStepTimer.startTimer();
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.guitar.replayer.monitor.GTestMonitor#init()
-     */
-    @Override
-    public void init() {
-        GUITARLog.log.info(this.getClass().getName() + " test monitor applied");
-        tStepTimer = new Timer("Step Timer", nStepTimeout);
-        tStepTimer.start();
-        nStartTime = System.currentTimeMillis();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.guitar.replayer.monitor.GTestMonitor#init()
+	 */
+	@Override
+	public void init() {
+		GUITARLog.log.info(this.getClass().getName()
+				+ " test monitor is applied");
+		tStepTimer = new Timer("Step Timer", nStepTimeout);
+		tStepTimer.start();
+		nStartTime = System.currentTimeMillis();
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.guitar.replayer.monitor.GTestMonitor#term()
-     */
-    @Override
-    public void term() {
-        // // ------------------
-        // // Elapsed time:
-        // long nEndTime = System.currentTimeMillis();
-        // long nDuration = nEndTime - nStartTime;
-        // DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
-        // df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        // GUITARLog.log.info("Time Elapsed: " + df.format(nDuration));
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.guitar.replayer.monitor.GTestMonitor#term()
+	 */
+	@Override
+	public void term() {
+		// // ------------------
+		// // Elapsed time:
+		// long nEndTime = System.currentTimeMillis();
+		// long nDuration = nEndTime - nStartTime;
+		// DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
+		// df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		// GUITARLog.log.info("Time Elapsed: " + df.format(nDuration));
+	}
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.guitar.replayer.monitor.GTestMonitor#exceptionHandler(edu.umd.cs.guitar.exception.GException)
-     */
-    @Override
-    public void exceptionHandler(GException e) {
-        if(e instanceof TimeoutException)
-            GUITARLog.log.error("TimeOut");
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.umd.cs.guitar.replayer.monitor.GTestMonitor#exceptionHandler(edu.
+	 * umd.cs.guitar.exception.GException)
+	 */
+	@Override
+	public void exceptionHandler(GException e) {
+		if (e instanceof TimeoutException)
+			GUITARLog.log.error("TimeOut");
+	}
 
 }
 
@@ -123,71 +128,71 @@ public class TimeMonitor extends GTestMonitor {
  * 
  */
 class Timer extends Thread {
-    boolean isRunning = false;
-    long nStartTime;
-    String name;
+	boolean isRunning = false;
+	long nStartTime;
+	String name;
 
-    /**
-     * @return the name
-     */
-    public String getTimerName() {
-        return name;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getTimerName() {
+		return name;
+	}
 
-    /**
-     * @param name
-     * @param nTimeout
-     */
-    public Timer(String name, int nTimeout) {
-        super();
-        this.name = name;
-        this.nTimeout = nTimeout;
-    }
+	/**
+	 * @param name
+	 * @param nTimeout
+	 */
+	public Timer(String name, int nTimeout) {
+		super();
+		this.name = name;
+		this.nTimeout = nTimeout;
+	}
 
-    /** Length of timeout */
-    int nTimeout = 0;
+	/** Length of timeout */
+	int nTimeout = 0;
 
-    /** Rate at which timer is checked */
-    protected int m_rate = 100;
+	/** Rate at which timer is checked */
+	protected int m_rate = 100;
 
-    /** Time elapsed */
-    private int m_elapsed;
+	/** Time elapsed */
+	private int m_elapsed;
 
-    public void startTimer() {
-        m_elapsed = 0;
-        nStartTime = System.currentTimeMillis();
-        isRunning = true;
-    }
+	public void startTimer() {
+		m_elapsed = 0;
+		nStartTime = System.currentTimeMillis();
+		isRunning = true;
+	}
 
-    public void stopTimer() {
-        isRunning = false;
-    }
+	public void stopTimer() {
+		isRunning = false;
+	}
 
-    private void timeout() {
-        GUITARLog.log.info(name + ": TIMEOUT!!!");
-        System.setSecurityManager(null);
-        System.exit(1);
-    }
+	private void timeout() {
+		GUITARLog.log.info(name + ": TIMEOUT!!!");
+		System.setSecurityManager(null);
+		System.exit(1);
+	}
 
-    public void run() {
-        while (m_elapsed < nTimeout) {
-            try {
-                Thread.sleep(m_rate);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (isRunning)
-                m_elapsed += m_rate;
+	public void run() {
+		while (m_elapsed < nTimeout) {
+			try {
+				Thread.sleep(m_rate);
+			} catch (InterruptedException e) {
+				GUITARLog.log.error(e);
+			}
+			if (isRunning)
+				m_elapsed += m_rate;
 
-        }
-        timeout();
-    }
+		}
+		timeout();
+	}
 
-    /**
-     * @return the elapsed time
-     */
-    public long getElapsedTime() {
-        return (System.currentTimeMillis() - nStartTime);
-    }
+	/**
+	 * @return the elapsed time
+	 */
+	public long getElapsedTime() {
+		return (System.currentTimeMillis() - nStartTime);
+	}
 
 }

@@ -50,152 +50,156 @@ import edu.umd.cs.guitar.util.GUITARLog;
  */
 public class StateMonitorFull extends GTestMonitor {
 
-    static ObjectFactory factory = new ObjectFactory();
+	static ObjectFactory factory = new ObjectFactory();
 
-    /**
-     * Output GUIState file
-     */
-    String sStateFile;
+	/**
+	 * Output GUIState file
+	 */
+	String sStateFile;
 
-    /**
-     * Output GUI state object
-     */
-    TestCase outTestCase;
+	/**
+	 * Output GUI state object
+	 */
+	TestCase outTestCase;
 
-    /**
-     * @param sStateFile
-     *      ouput file name 
-     * @param delay
-     *      delay after each step
-     */
-    public StateMonitorFull(String sStateFile, int delay) {
-        super();
-        this.sStateFile = sStateFile;
-        this.delay = delay;
-    }
+	/**
+	 * @param sStateFile
+	 *            ouput file name
+	 * @param delay
+	 *            delay after each step
+	 */
+	public StateMonitorFull(String sStateFile, int delay) {
+		super();
+		this.sStateFile = sStateFile;
+		this.delay = delay;
+	}
 
-    /**
-     * Delay time for GUI to get stable before recording
-     */
-    int delay;
+	/**
+	 * Delay time for GUI to get stable before recording
+	 */
+	int delay;
 
-    GApplication gApplication;
-    GReplayerMonitor monitor;
+	GApplication gApplication;
+	GReplayerMonitor monitor;
 
-    /**
-     * @param sStateFile
-     */
-    @Deprecated
-    public StateMonitorFull(String sStateFile) {
-        super();
-        this.sStateFile = sStateFile;
+	/**
+	 * @param sStateFile
+	 */
+	@Deprecated
+	public StateMonitorFull(String sStateFile) {
+		super();
+		this.sStateFile = sStateFile;
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.guitar.replayer.GTestMonitor#init()
-     */
-    @Override
-    public void init() {
-        // Record the initial state
-        outTestCase = factory.createTestCase();
-        monitor = replayer.getMonitor();
-        gApplication = monitor.getApplication();
-        IO.writeObjToFile(outTestCase, sStateFile);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.guitar.replayer.GTestMonitor#init()
+	 */
+	@Override
+	public void init() {
+		// Record the initial state
+		outTestCase = factory.createTestCase();
+		monitor = replayer.getMonitor();
+		gApplication = monitor.getApplication();
+		IO.writeObjToFile(outTestCase, sStateFile);
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.guitar.replayer.GTestMonitor#afterStep(edu.umd.cs.guitar.replayer
-     * .TestStepEventArgs)
-     */
-    @Override
-    public void afterStep(TestStepEndEventArgs eStep) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.umd.cs.guitar.replayer.GTestMonitor#afterStep(edu.umd.cs.guitar.replayer
+	 * .TestStepEventArgs)
+	 */
+	@Override
+	public void afterStep(TestStepEndEventArgs eStep) {
 
-        GUITARLog.log.info("Delaying for " + delay
-                + " ms to get a stable GUI state....");
-        try {
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		GUITARLog.log.info("Delaying for " + delay
+				+ " ms to get a stable GUI state....");
+		try {
+			Thread.sleep(delay);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			GUITARLog.log.error(e);
+		}
 
-        GUITARLog.log.info("Recording GUI state....");
+		GUITARLog.log.info("Recording GUI state....");
 
-        List<StepType> lSteps = outTestCase.getStep();
-        StepType step = eStep.getStep();
-        GUIStructure guiState = gApplication.getCurrentState();
+		List<StepType> lSteps = outTestCase.getStep();
+		StepType step = eStep.getStep();
+		GUIStructure guiState = gApplication.getCurrentState();
 
-        // Check opened window
-        windowsAfterStep = gApplication.getCurrentWinID();
-        Set<String> windowsNew = new HashSet<String>(windowsAfterStep);
-        windowsNew.removeAll(windowsBeforeStep);
+		// Check opened window
+		windowsAfterStep = gApplication.getCurrentWinID();
+		Set<String> windowsNew = new HashSet<String>(windowsAfterStep);
+		windowsNew.removeAll(windowsBeforeStep);
 
-        if (windowsNew.size() > 0) {
-            GUITARLog.log.info("New window(s) open");
-            for (String sID : windowsNew)
-                GUITARLog.log.info(sID);
-            GUITARLog.log.debug("By component: ");
+		if (windowsNew.size() > 0) {
+			GUITARLog.log.info("New window(s) open");
+			for (String sID : windowsNew)
+				GUITARLog.log.info(sID);
+			GUITARLog.log.debug("By component: ");
 
-            List<PropertyType> ID = monitor.selectIDProperties(eStep.component);
-            AttributesType signature = factory.createAttributesType();
-            signature.setProperty(ID);
+			List<PropertyType> ID = monitor.selectIDProperties(eStep.component);
+			AttributesType signature = factory.createAttributesType();
+			signature.setProperty(ID);
 
-            GUIStructureWrapper guiStateAdapter = new GUIStructureWrapper(
-                    guiState);
-            guiStateAdapter.addValueBySignature(signature,
-                    GUITARConstants.INVOKELIST_TAG_NAME, windowsNew);
-        }
+			GUIStructureWrapper guiStateAdapter = new GUIStructureWrapper(
+					guiState);
+			guiStateAdapter.addValueBySignature(signature,
+					GUITARConstants.INVOKELIST_TAG_NAME, windowsNew);
+		}
 
-        step.setGUIStructure(guiState);
+		step.setGUIStructure(guiState);
 
-        lSteps.add(step);
-        outTestCase.setStep(lSteps);
-        GUITARLog.log.info("DONE");
-        GUITARLog.log.info("Dumping out state ... ");
-        IO.writeObjToFile(outTestCase, sStateFile);
-        GUITARLog.log.info("DONE");
-    }
+		lSteps.add(step);
+		outTestCase.setStep(lSteps);
+		GUITARLog.log.info("DONE");
+		GUITARLog.log.info("Dumping out state ... ");
+		IO.writeObjToFile(outTestCase, sStateFile);
+		GUITARLog.log.info("DONE");
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.guitar.replayer.GTestMonitor#beforeStep(edu.umd.cs.guitar.
-     * replayer.TestStepEventArgs)
-     */
-    @Override
-    public void beforeStep(TestStepStartEventArgs eStep) {
-        windowsBeforeStep = gApplication.getCurrentWinID();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.umd.cs.guitar.replayer.GTestMonitor#beforeStep(edu.umd.cs.guitar.
+	 * replayer.TestStepEventArgs)
+	 */
+	@Override
+	public void beforeStep(TestStepStartEventArgs eStep) {
+		windowsBeforeStep = gApplication.getCurrentWinID();
+	}
 
-    Set<String> windowsBeforeStep;
-    Set<String> windowsAfterStep;
+	Set<String> windowsBeforeStep;
+	Set<String> windowsAfterStep;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.guitar.replayer.GTestMonitor#term()
-     */
-    @Override
-    public void term() {
-        // GUITARLog.log.info("Dumping GUI states");
-        // IO.writeObjToFile(outTestCase, sStateFile);
-        // GUITARLog.log.info("DONE");
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.guitar.replayer.GTestMonitor#term()
+	 */
+	@Override
+	public void term() {
+		// GUITARLog.log.info("Dumping GUI states");
+		// IO.writeObjToFile(outTestCase, sStateFile);
+		// GUITARLog.log.info("DONE");
+	}
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.guitar.replayer.monitor.GTestMonitor#exceptionHandler(edu.umd.cs.guitar.exception.GException)
-     */
-    @Override
-    public void exceptionHandler(GException e) {
-        // TODO Auto-generated method stub
-        
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.umd.cs.guitar.replayer.monitor.GTestMonitor#exceptionHandler(edu.
+	 * umd.cs.guitar.exception.GException)
+	 */
+	@Override
+	public void exceptionHandler(GException e) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
