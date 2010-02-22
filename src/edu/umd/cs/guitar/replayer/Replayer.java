@@ -176,10 +176,10 @@ public class Replayer {
 		// 
 		try {
 			monitor.setUp();
-			
+
 			log.info("Connecting to application...");
 			monitor.connectToApplication();
-			
+
 			// Monitor before the test case
 			for (GTestMonitor monitor : lTestMonitor) {
 				monitor.init();
@@ -298,7 +298,11 @@ public class Replayer {
 			throw new ComponentNotFound();
 		}
 
-		GUITARLog.log.info("Finding window *" + sWindowID + "*.... ");
+		GUITARLog.log.info("Window Title: *" + sWindowID+"*");
+		GUITARLog.log.info("Widget ID: *" + sWidgetID+"*");
+		GUITARLog.log.info("");
+		
+		GUITARLog.log.info("Finding window *" + sWindowID+"*....");
 		GWindow gWindow = monitor.getWindow(sWindowID);
 		GUITARLog.log.info("FOUND");
 		GUITARLog.log.info("");
@@ -318,7 +322,7 @@ public class Replayer {
 
 		GComponent containter = gWindow.getContainer();
 
-		GUITARLog.log.info("Finding widget *" + sWidgetID + "*.... ");
+		GUITARLog.log.info("Finding widget *" + sWidgetID+"*....");
 
 		// GUITARLog.log.debug("Componnent signature: ");
 		// for (PropertyTypeWrapper p : IDAdapter) {
