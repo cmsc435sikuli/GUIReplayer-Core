@@ -114,21 +114,27 @@ public class GComponentMock extends GComponent {
 	 * @return "w1"
 	 * @see edu.umd.cs.guitar.model.GObject#getFullID()
 	 */
-	@Override
+	/*@Override
 	public String getFullID() {
 		// TODO Auto-generated method stub
 		return "w1";
+	}*/
+	
+	@Override
+	public String getTitle() {
+		return "wl";
 	}
 
 	/**
 	 * @return "window1"
 	 * @see edu.umd.cs.guitar.model.GObject#getName()
 	 */
-	@Override
+	/*@Override
 	public String getName() {
 		// TODO Auto-generated method stub
 		return "window1";
-	}
+	}*/
+	
 	/**
 	 * Override the function getFirstChild(List<PropertyTypeWrapper> lIDProperties)
 	 * @return new GComponentMock()
@@ -138,4 +144,8 @@ public class GComponentMock extends GComponent {
 		return new GComponentMock();
 	 }
 
+	@Override
+	public boolean isEnable() {
+		return false;
+	}
 }

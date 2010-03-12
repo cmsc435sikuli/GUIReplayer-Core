@@ -102,21 +102,26 @@ public class GWindowStub extends GWindow {
      *
      * @return m_getFullID
      */
-    @Override
+    /*@Override
     public String getFullID( ) {
 	return m_getFullID;
+    }*/
+	
+	   @Override
+    public String getTitle( ) {
+	return m_getFullID;
     }
-
+	
     /**
      * This function simulates a call to the abstract base class function
      * getName.
      *
      * @return m_getName
      */
-    @Override
+    /*@Override
     public String getName( ) {
 	return m_getName;
-    }
+    }*/
 
     /**
      * This function simulates a call to the abstract base class function
