@@ -179,20 +179,20 @@
 
   <!-- Java doc -->
 	<target description="create javadocs" name="doc">
-		<mkdir dir="${dist.dir}" />
-		<mkdir dir="${dist.dir}/${dist.doc.dir}" />
-		<mkdir dir="${dist.dir}/${dist.doc.dir}/${ant.project.name}" />
+		<!--mkdir dir="${dist.dir}" /-->
+		<mkdir dir="${dist.doc.dir}" />
+		<mkdir dir="${dist.doc.dir}/${ant.project.name}" />
 		<property name="ps" value="${path.separator}"/>		
-        <property name="ydocInstallPath" value="${shared.lib.dir}/${ydocinstall.dir}"/>
-		<javadoc sourcepath="${test.dir}" destdir="${dist.dir}/${dist.doc.dir}/${ant.project.name}" >
+        <property name="ydocInstallPath" value="${ydocinstall.dir}"/>
+		<javadoc sourcepath="${test.dir}" destdir="${dist.doc.dir}/${ant.project.name}" >
 			<classpath>
-				<fileset dir="${dist.dir}/${dist.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
+				<fileset dir="${dist.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
 				<path refid="dist.lib.path.ref" />
 			</classpath>
             <doclet name="ydoc.doclets.YStandard"
-			path="${ydocInstallPath}/lib/ydoc.jar${ps}${ydocInstallPath}/resources${ps}${ydocInstallPath}/doc">
-				<!--path="${shared.ydoc-3/0_01-jdk1.5/lib/ydoc.jar}">-->
-                <param name="-author"/>
+				path="${ydocInstallPath}/lib/ydoc.jar${ps}${ydocInstallPath}/resources${ps}${ydocInstallPath}/doc">
+				<!--path="${shared.ydoc-3/0_01-jdk1.5/lib/ydoc.jar}"-->
+				<param name="-author"/>
                 <param name="-generic"/>
                 <param name="-umlautogen"/>
                 <param name="-filterpath" value="${ydocInstallPath}/lib/ydoc.jar"/>
