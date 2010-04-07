@@ -21,8 +21,10 @@ public class GTestMonitorTest extends TestCase {
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
-		m_EFG = ".//tests//inputs//ButtonDemo.efg.xml";
-		m_GUI = ".//tests//inputs//ButtonDemo.gui.xml";
+		//m_EFG = ".//tests//inputs//ButtonDemo.efg.xml";
+		//m_GUI = ".//tests//inputs//ButtonDemo.gui.xml";
+		m_EFG = ".//inputs//ButtonDemo.efg.xml";
+		m_GUI = ".//inputs//ButtonDemo.gui.xml";
 		m_tsm = new TestCaseMock();
 		m_gtmm = new GTestMonitorMock();
 		m_replayer= new Replayer(m_tsm,m_GUI,m_EFG);

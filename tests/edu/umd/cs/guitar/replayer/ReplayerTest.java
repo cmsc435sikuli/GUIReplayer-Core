@@ -51,8 +51,11 @@ public class ReplayerTest extends TestCase {
 	  * set up the tests
 	  */
 	protected void setUp(){
-		m_EFG = ".//tests//inputs//ButtonDemo.efg.xml";
-		m_GUI = ".//tests//inputs//ButtonDemo.gui.xml";
+		//m_EFG = ".//tests//inputs//ButtonDemo.efg.xml";
+		//m_GUI = ".//tests//inputs//ButtonDemo.gui.xml";
+		m_EFG = ".//inputs//ButtonDemo.efg.xml";
+		m_GUI = ".//inputs//ButtonDemo.gui.xml";
+		
 		m_tsm = new TestCaseMock();
 		try {
 			replayer = new Replayer(m_tsm,m_GUI,m_EFG);

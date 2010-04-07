@@ -147,6 +147,7 @@
       <classpath>
 	<pathelement location="${jar.dir}/${module}-unit-tests.jar" />
 	<pathelement location="${shared.lib.dir}/log4j-1.2.15.jar" />
+	<pathelement location="${shared.lib.dir}/jemmy.jar" />
 	<!--<pathelement location="${shared.lib.dir}/guitarlib/guitarmodel.jar" />-->
 	<pathelement location="${dist.lib.dir}/GUITARModel-Core.jar" />
       </classpath>

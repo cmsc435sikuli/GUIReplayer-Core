@@ -32,8 +32,8 @@ public class StateMonitorTest extends TestCase {
      */
 	protected void setUp() throws Exception {
 	//	super.setUp();
-		sMonitor= new StateMonitor(".//tests//inputs//ButtonDemo1.sta.xml");
-	
+		//sMonitor= new StateMonitor(".//tests//inputs//ButtonDemo1.sta.xml");
+		sMonitor= new StateMonitor(".//inputs//ButtonDemo1.sta.xml");
 		component = new ComponentType();
     	window = new GUIType();
 		step = new StepTypeMock();
