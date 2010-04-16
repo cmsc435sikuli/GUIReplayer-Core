@@ -34,7 +34,7 @@ public class StateMonitorFullTest extends TestCase {
 		     */
 	protected void setUp(){
 		//sMonitor= new StateMonitorFull(".//tests//inputs//ButtonDemo2.sta.xml");
-		sMonitor= new StateMonitorFull(".//inputs//ButtonDemo2.sta.xml");
+		sMonitor= new StateMonitorFull(".//inputs//ButtonDemo2.sta.xml", 0);
 		
 		component = new ComponentType();
     	window = new GUIType();
@@ -44,8 +44,8 @@ public class StateMonitorFullTest extends TestCase {
 		gmonitor=new GReplayerMonitorMock();
 		//String m_EFG = ".//tests//inputs//ButtonDemo.efg.xml";
 		//String m_GUI = ".//tests//inputs//ButtonDemo.gui.xml";
-		String m_EFG = ".//inputs//ButtonDemo.efg.xml";
-		String m_GUI = ".//inputs//ButtonDemo.gui.xml";
+		String m_EFG = ".//inputs//Project.EFG.xml";
+		String m_GUI = ".//inputs//Project.GUI.xml";
 		TestCaseMock m_tsm = new TestCaseMock();
 		try {
 			rep = new Replayer(m_tsm,m_GUI,m_EFG);

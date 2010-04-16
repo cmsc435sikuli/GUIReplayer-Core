@@ -63,8 +63,11 @@ public class StateMonitorTest extends TestCase {
 		TestStepEndEventArgs ltc =  new TestStepEndEventArgs(step, component, window);
 		sMonitor.outTestCase = new TestCaseMock();
 		GReplayerMonitor monitor=new GReplayerMonitorMock();
-		String m_EFG = ".//tests//inputs//ButtonDemo.efg.xml";
-		String m_GUI = ".//tests//inputs//ButtonDemo.gui.xml";
+		//String m_EFG = ".//tests//inputs//ButtonDemo.efg.xml";
+		//String m_GUI = ".//tests//inputs//ButtonDemo.gui.xml";
+		String m_EFG = ".//inputs//Project.EFG.xml";
+		String m_GUI = ".//inputs//Project.GUI.xml";
+		
 		TestCaseMock m_tsm = new TestCaseMock();
 		Replayer rep;
 		try {

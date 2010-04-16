@@ -146,6 +146,6 @@ public class GComponentMock extends GComponent {
 
 	@Override
 	public boolean isEnable() {
-		return false;
+		return true;
 	}
 }

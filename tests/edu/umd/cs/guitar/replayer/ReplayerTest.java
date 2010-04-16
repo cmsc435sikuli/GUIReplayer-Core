@@ -12,6 +12,7 @@ import edu.umd.cs.guitar.model.data.StepType;
 import java.io.IOException;
 import java.lang.reflect.Field; 
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -42,6 +43,8 @@ public class ReplayerTest extends TestCase {
 	 private TestCaseMock m_tsm;
 	 private String m_EFG;
 	 private String m_GUI;
+	 private int timeout;
+	 private List<GTestMonitorMock> lTestMonitorMock = new ArrayList<GTestMonitorMock>();
 
 	 Logger log = GUITARLog.log;
 	 Field fields[];
@@ -53,8 +56,8 @@ public class ReplayerTest extends TestCase {
 	protected void setUp(){
 		//m_EFG = ".//tests//inputs//ButtonDemo.efg.xml";
 		//m_GUI = ".//tests//inputs//ButtonDemo.gui.xml";
-		m_EFG = ".//inputs//ButtonDemo.efg.xml";
-		m_GUI = ".//inputs//ButtonDemo.gui.xml";
+		m_EFG = ".//inputs//Project.EFG.xml";
+		m_GUI = ".//inputs//Project.GUI.xml";
 		
 		m_tsm = new TestCaseMock();
 		try {
@@ -104,13 +107,13 @@ public class ReplayerTest extends TestCase {
 	 
 	 }
 	 
-/*	 public void TestSetTimeOut() {
-	        timeout= (int)Math.random();
-	        m_replayer.setTimeOut(timeout);
-	       
+		public void testSetTimeOut() {
+	        timeout = 500;
+	        replayer.setTimeOut(timeout);
+			assertEquals((timeout != 0), true);
 	    }
 	 
-	*/
+	
 	 /**
 	     * This function checks execute when it works fine.
 	     */
@@ -222,11 +225,12 @@ public class ReplayerTest extends TestCase {
 		 assertSame(replayer.getMonitor(),l_monitor);
 		
 	   }
-	/* public void testAddTestMonitor() {
+	 public void testRemoveTestMonitor() {
 		 GTestMonitorMock aTestMonitor = new GTestMonitorMock();
 		 replayer.addTestMonitor(aTestMonitor);
-		 
-		 assertSame(replayer.getMonitor(),aTestMonitor);
+		 replayer.removeTestMonitor(aTestMonitor);		
+
+		 assertEquals((lTestMonitorMock.size() == 0), true);
 	    }
-	    */
+	    
 }
