@@ -3,6 +3,8 @@ package edu.umd.cs.guitar.replayer.monitor;
 import edu.umd.cs.guitar.model.data.StepType;
 import edu.umd.cs.guitar.replayer.StepTypeMock;
 import edu.umd.cs.guitar.replayer.monitor.TestStepEndEventArgs;
+import edu.umd.cs.guitar.exception.GException;
+import edu.umd.cs.guitar.exception.TimeoutException;
 import junit.framework.TestCase;
 /**
  * The TimeMonitorTest class implements unit tests for the member
@@ -15,6 +17,7 @@ public class TimeMonitorTest extends TestCase {
 	TestStepStartEventArgs arg ;
 	/** an instance of StepType*/
 	StepType step;
+	Timer t;
 	
 	/**
      * Set up tests
@@ -68,9 +71,13 @@ public class TimeMonitorTest extends TestCase {
 		tm.init();
 		tm.beforeStep(null);
 		tm.afterStep(null);
+		tm.term();
 		assertTrue(a==tm.nEndTime);
-		
-		
 	}
-
+	
+	public void testException() {
+		setUp();
+		tm.exceptionHandler(new TimeoutException());
+		assertTrue(tm != null);
+	 }
 }

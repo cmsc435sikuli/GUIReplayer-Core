@@ -4,6 +4,7 @@ package edu.umd.cs.guitar.replayer.monitor;
 import junit.framework.TestCase;
 import edu.umd.cs.guitar.replayer.Replayer;
 import edu.umd.cs.guitar.replayer.TestCaseMock;
+import edu.umd.cs.guitar.exception.*;
 
 /**
  * @author Ran
@@ -17,6 +18,7 @@ public class GTestMonitorTest extends TestCase {
 	 private TestCaseMock m_tsm;
 	 private String m_EFG;
 	 private String m_GUI;
+	 private PauseMonitor pm = new PauseMonitor();
 	/**
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -49,5 +51,24 @@ public class GTestMonitorTest extends TestCase {
 		 m_gtmm.setReplayer(m_replayer);
 		 assertEquals( m_gtmm.getReplayer(), m_replayer );
 		 
+	 }
+	 
+	 /* PauseMonitor tests */
+	 
+	 public void testInit() {
+		pm.init();
+		pm.beforeStep(null);
+		assertTrue(pm != null);
+	 }
+	 
+	 public void testTerm() {
+		pm.term();
+		pm.afterStep(null);
+		assertTrue(pm != null);
+	 }
+	 
+	 public void testException() {
+		pm.exceptionHandler(new ComponentNotFound());
+		assertTrue(pm != null);
 	 }
 }

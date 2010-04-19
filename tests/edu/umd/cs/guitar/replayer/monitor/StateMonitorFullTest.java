@@ -17,6 +17,7 @@ import edu.umd.cs.guitar.replayer.Replayer;
 import edu.umd.cs.guitar.replayer.StepTypeMock;
 import edu.umd.cs.guitar.replayer.TestCaseMock;
 import junit.framework.TestCase;
+import edu.umd.cs.guitar.exception.*;
 
 public class StateMonitorFullTest extends TestCase {
 	StateMonitorFull sMonitor;
@@ -98,6 +99,7 @@ public class StateMonitorFullTest extends TestCase {
 		sMonitor.gApplication=gApp2;
 		sMonitor.monitor=gmonitor;
 		sMonitor.afterStep(tc);
+		sMonitor.term();
 		
 		assertFalse(sMonitor.outTestCase.getStep()==null);
 		assertEquals(sMonitor.windowsAfterStep,gApp2.getCurrentWinID());
@@ -116,6 +118,10 @@ public class StateMonitorFullTest extends TestCase {
 		assertEquals(sMonitor.windowsBeforeStep,gApp1.getCurrentWinID());
 	}
 	
-	
+	public void testException() {
+		setUp();
+		sMonitor.exceptionHandler(new ComponentNotFound());
+		assertTrue(sMonitor != null);
+	 }
 	
 }

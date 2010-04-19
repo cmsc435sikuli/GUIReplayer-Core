@@ -19,7 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
-import edu.umd.cs.guitar.exception.ComponentNotFound;
+import edu.umd.cs.guitar.exception.*;
 import edu.umd.cs.guitar.replayer.Replayer;
 import edu.umd.cs.guitar.replayer.monitor.GTestMonitor;
 import edu.umd.cs.guitar.replayer.monitor.GTestMonitorMock;
@@ -213,7 +213,7 @@ public class ReplayerTest extends TestCase {
 		}
 		 
 	 }
-	
+	 
 	 /**
 	     * This function checks setMonitor function
 	     */
@@ -231,6 +231,11 @@ public class ReplayerTest extends TestCase {
 		 replayer.removeTestMonitor(aTestMonitor);		
 
 		 assertEquals((lTestMonitorMock.size() == 0), true);
-	    }
+	}
+		
+	public void testComponentDisabled() {
+		ComponentDisabled c = new ComponentDisabled();
+        assertNotNull(c);
+    }
 	    
 }
