@@ -155,7 +155,7 @@ class Timer extends Thread {
 	protected int m_rate = 100;
 
 	/** Time elapsed */
-	private int m_elapsed;
+	private int m_elapsed=0;
 
 	public void startTimer() {
 		m_elapsed = 0;

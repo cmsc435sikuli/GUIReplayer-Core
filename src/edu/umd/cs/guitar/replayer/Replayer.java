@@ -177,9 +177,9 @@ public class Replayer {
 
 			log.info("Connecting to application...");
 			monitor.connectToApplication();
-			
+
 			log.info("Application is connected.");
-			
+
 			// Monitor before the test case
 			for (GTestMonitor monitor : lTestMonitor) {
 				monitor.init();
@@ -203,10 +203,11 @@ public class Replayer {
 			monitor.cleanUp();
 
 		} catch (GException e) {
-			GUITARLog.log.error("GUITAR Exception", e);
+			// GUITARLog.log.error("GUITAR Exception", e);
 			for (GTestMonitor monitor : lTestMonitor) {
 				monitor.exceptionHandler(e);
 			}
+			throw e;
 		}
 	}
 
@@ -303,6 +304,8 @@ public class Replayer {
 		GUITARLog.log.info("");
 
 		GUITARLog.log.info("Finding window *" + sWindowID + "*....");
+		
+		// TODO: Change this method to a fuzzy matching 
 		GWindow gWindow = monitor.getWindow(sWindowID);
 		GUITARLog.log.info("FOUND");
 		GUITARLog.log.info("");
