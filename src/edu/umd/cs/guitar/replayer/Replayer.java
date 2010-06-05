@@ -350,13 +350,17 @@ public class Replayer {
 		GUITARLog.log.info("Action: *" + sAction);
 		GUITARLog.log.info("");
 
+		// Optional data
+		String sOptionalData= comp.getDComponentType().getOptional();
+		
 		if (parameters == null)
 			gEvent.perform(gComponent);
-
 		else if (parameters.size() == 0) {
 			gEvent.perform(gComponent);
 		} else
 			gEvent.perform(gComponent, parameters);
+		
+		
 
 		TestStepEndEventArgs stepEndArgs = new TestStepEndEventArgs(step,
 				gComponent.extractProperties(), gWindow.extractGUIProperties());
