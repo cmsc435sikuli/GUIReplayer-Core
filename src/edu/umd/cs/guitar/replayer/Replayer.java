@@ -21,6 +21,7 @@ package edu.umd.cs.guitar.replayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -45,6 +46,7 @@ import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
 import edu.umd.cs.guitar.model.IO;
+import edu.umd.cs.guitar.model.data.AttributesType;
 import edu.umd.cs.guitar.model.data.EFG;
 import edu.umd.cs.guitar.model.data.EventType;
 import edu.umd.cs.guitar.model.data.GUIStructure;
@@ -304,8 +306,8 @@ public class Replayer {
 		GUITARLog.log.info("");
 
 		GUITARLog.log.info("Finding window *" + sWindowID + "*....");
-		
-		// TODO: Change this method to a fuzzy matching 
+
+		// TODO: Change this method to a fuzzy matching
 		GWindow gWindow = monitor.getWindow(sWindowID);
 		GUITARLog.log.info("FOUND");
 		GUITARLog.log.info("");
@@ -351,16 +353,21 @@ public class Replayer {
 		GUITARLog.log.info("");
 
 		// Optional data
-		String sOptionalData= comp.getDComponentType().getOptional();
-		
+		AttributesType optional = comp.getDComponentType().getOptional();
+		Hashtable<String, List<String>> optionalValues = null;
+		if (optional != null) {
+			optionalValues = new Hashtable<String, List<String>>();
+			for (PropertyType property : optional.getProperty()) {
+				optionalValues.put(property.getName(), property.getValue());
+			}
+		}
+
 		if (parameters == null)
-			gEvent.perform(gComponent);
+			gEvent.perform(gComponent, optionalValues);
 		else if (parameters.size() == 0) {
-			gEvent.perform(gComponent);
+			gEvent.perform(gComponent, optionalValues);
 		} else
-			gEvent.perform(gComponent, parameters);
-		
-		
+			gEvent.perform(gComponent, parameters, optionalValues);
 
 		TestStepEndEventArgs stepEndArgs = new TestStepEndEventArgs(step,
 				gComponent.extractProperties(), gWindow.extractGUIProperties());
