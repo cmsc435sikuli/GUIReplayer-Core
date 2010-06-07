@@ -355,7 +355,12 @@ public class Replayer {
 		// Optional data
 		AttributesType optional = comp.getDComponentType().getOptional();
 		Hashtable<String, List<String>> optionalValues = null;
+		
+		
+		
 		if (optional != null) {
+			
+			
 			optionalValues = new Hashtable<String, List<String>>();
 			for (PropertyType property : optional.getProperty()) {
 				optionalValues.put(property.getName(), property.getValue());

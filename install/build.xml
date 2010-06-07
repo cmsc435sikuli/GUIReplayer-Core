@@ -48,21 +48,20 @@
 	<!-- Environment vars-->
 
 	<property file="./build.properties" />
-	<available file="${pre.antfile}" property="filePresent"/>
-	<available file="${post.antfile}" property="postFilePresent"/>
-
-
+	<available file="${pre.antfile}" property="filePresent" />
+	<available file="${post.antfile}" property="postFilePresent" />
+	<property name="debug" value="true" />
 
 	<!-- third party jar files for distribution -->
-	<echo message= "./" />
-	<echo message = "${shared.lib.dir}" />
+	<echo message="./" />
+	<echo message="${shared.lib.dir}" />
 	<fileset id="3rd-dist.file.ref" dir="${shared.lib.dir}" includes="*.jar" erroronmissingdir="false" />
 
 	<!-- PRE File -->
 
 	<target description="Build dependencies" name="pre" if="filePresent">
 
-		<ant antfile="${pre.antfile}"  dir="${basedir}" inheritAll="false">
+		<ant antfile="${pre.antfile}" dir="${basedir}" inheritAll="false">
 			<property name="debug" value="true" />
 			<property file="./build.properties" />
 		</ant>
@@ -72,7 +71,7 @@
 
 	<target description="Build dependencies" name="post" if="postFilePresent">
 
-		<ant antfile="${post.antfile}"  dir="${basedir}" inheritAll="false">
+		<ant antfile="${post.antfile}" dir="${basedir}" inheritAll="false">
 			<property name="debug" value="true" />
 			<property file="./build.properties" />
 		</ant>
@@ -106,7 +105,7 @@
 	<!-- Jar -->
 	<target name="jar" depends="build">
 		<mkdir dir="${dist.lib.dir}" />
-		<delete file="${dist.lib.dir}/${module}.jar"/>
+		<delete file="${dist.lib.dir}/${module}.jar" />
 		<jar jarfile="${dist.lib.dir}/${module}.jar" update="true">
 			<fileset dir="${build.dir}">
 			</fileset>
@@ -114,27 +113,27 @@
 	</target>
 
 	<!-- Builds all the modules needed to build the current module -->
-	<target name= "updateDepends" >
+	<target name="updateDepends">
 		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 			<classpath>
-				<pathelement location="${ant.dir}/ant-contrib-0.6.jar"/>
+				<pathelement location="${ant.dir}/ant-contrib-0.6.jar" />
 			</classpath>
 		</taskdef>
 
 		<!-- Load the svn task for ant -->
-		<path id="svnant.classpath" >
+		<path id="svnant.classpath">
 			<fileset dir="${ant.dir}">
 				<include name="*.jar" />
 			</fileset>
 		</path>
-		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref ="svnant.classpath" />
+		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svnant.classpath" />
 
 		<!-- For each module that we need -->
 		<for list="${needsModules}" param="letter">
 			<sequential>
 
 				<!-- Is the needed .jar file already present -->
-				<available file="${dist.lib.dir}/@{letter}.jar"  property="@{letter}.jar.present"  />
+				<available file="${dist.lib.dir}/@{letter}.jar" property="@{letter}.jar.present" />
 				<if>
 					<equals arg1="${@{letter}.jar.present}" arg2="true" />
 					<then>
@@ -143,9 +142,9 @@
 
 					<!-- otherwise check if folder is also not present -->
 					<else>
-						<property name="@{letter}.folder.present" value="false"/>
+						<property name="@{letter}.folder.present" value="false" />
 						<echo message="@{letter}.jar is NOT present. Checking the folder ${dist.dir}/@{letter}" />
-						<available file="${dist.dir}/@{letter}" type="dir" property="@{letter}.folder.present"/>
+						<available file="${dist.dir}/@{letter}" type="dir" property="@{letter}.folder.present" />
 						<if>
 							<equals arg1="${@{letter}.folder.present}" arg2="false" />
 							<then>
@@ -156,7 +155,7 @@
 								</svn>
 							</then>
 							<else>
-								<echo message="************** @{letter} folder is present"/>
+								<echo message="************** @{letter} folder is present" />
 							</else>
 						</if>
 
@@ -176,8 +175,8 @@
 		</copy>
 	</target>
 
-	<target name= "copy" if="filesToCopy">
-		<echo message= "${dist.dir}" />
+	<target name="copy" if="filesToCopy">
+		<echo message="${dist.dir}" />
 		<copy todir="${dist.dir}" flatten="true">
 			<fileset dir="${basedir}/.." includes="${filesToCopy}" />
 		</copy>
@@ -187,28 +186,27 @@
 	<target description="create javadocs" name="doc">
 		<mkdir dir="${dist.doc.dir}" />
 		<mkdir dir="${dist.doc.dir}/${module}" />
-		<property name="ps" value="${path.separator}"/>
-		<property name="ydocInstallPath" value="${ydocinstall.dir}"/>
-		<javadoc sourcepath="${src.dir}" destdir="${dist.doc.dir}/${module}" >
+		<property name="ps" value="${path.separator}" />
+		<property name="ydocInstallPath" value="${ydocinstall.dir}" />
+		<javadoc sourcepath="${src.dir}" destdir="${dist.doc.dir}/${module}">
 			<classpath>
 				<fileset dir="${dist.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
 				<fileset dir="${shared.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
 				<fileset dir="${guitar.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
 			</classpath>
-			<doclet name="ydoc.doclets.YStandard"
-			path="${ydocInstallPath}/lib/ydoc.jar${ps}${ydocInstallPath}/resources${ps}${ydocInstallPath}/doc">
-				<param name="-author"/>
-				<param name="-generic"/>
-				<param name="-umlautogen"/>
-				<param name="-filterpath" value="${ydocInstallPath}/lib/ydoc.jar"/>
-				<param name="-filter"     value="ydoc.filters.ExcludeFilter"/>
-				<param name="-tag" value="y.precondition"/>
-				<param name="-tag" value="y.postcondition"/>
-				<param name="-tag" value="y.complexity"/>
-				<param name="-tag" value="param"/>
-				<param name="-tag" value="return"/>
-				<param name="-tag" value="see"/>
-				<param name="-tag" value="y.uml"/>
+			<doclet name="ydoc.doclets.YStandard" path="${ydocInstallPath}/lib/ydoc.jar${ps}${ydocInstallPath}/resources${ps}${ydocInstallPath}/doc">
+				<param name="-author"  />
+				<param name="-generic" />
+				<param name="-umlautogen" />
+				<param name="-filterpath" value="${ydocInstallPath}/lib/ydoc.jar" />
+				<param name="-filter" value="ydoc.filters.ExcludeFilter" />
+				<param name="-tag" value="y.precondition" />
+				<param name="-tag" value="y.postcondition" />
+				<param name="-tag" value="y.complexity" />
+				<param name="-tag" value="param" />
+				<param name="-tag" value="return" />
+				<param name="-tag" value="see" />
+				<param name="-tag" value="y.uml" />
 			</doclet>
 		</javadoc>
 	</target>
@@ -219,7 +217,7 @@
 		<delete dir="${build.dir}" />
 	</target>
 
-	<target name= "all" depends="clean,pre,updateDepends,dist,post,copy,doc">
+	<target name="all" depends="clean,pre,updateDepends,dist,post,copy,doc">
 		<echo message="This is ${module}" />
 	</target>
 </project>
