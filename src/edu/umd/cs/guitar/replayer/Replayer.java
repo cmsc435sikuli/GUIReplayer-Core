@@ -360,7 +360,6 @@ public class Replayer {
 		
 		if (optional != null) {
 			
-			
 			optionalValues = new Hashtable<String, List<String>>();
 			for (PropertyType property : optional.getProperty()) {
 				optionalValues.put(property.getName(), property.getValue());

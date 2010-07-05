@@ -36,8 +36,23 @@ import edu.umd.cs.guitar.model.data.PropertyType;
 public abstract class GReplayerMonitor {
 
     public GApplication application;
+    boolean isUseReg = false;
 
     /**
+	 * @return the isUseReg
+	 */
+	public boolean isUseReg() {
+		return isUseReg;
+	}
+
+	/**
+	 * @param isUseReg the isUseReg to set
+	 */
+	public void setUseReg(boolean isUseReg) {
+		this.isUseReg = isUseReg;
+	}
+
+	/**
      * Connect to application. This task includes start up the application if
      * needed
      * 
@@ -118,5 +133,7 @@ public abstract class GReplayerMonitor {
     public GApplication getApplication() {
         return application;
     }
+    
+    
 
 }
