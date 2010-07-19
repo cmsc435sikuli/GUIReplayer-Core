@@ -76,25 +76,25 @@ public abstract class GReplayerMonitor {
      * 
      * <p>
      * 
-     * @param sWindowID
+     * @param sWindowTitle
      * @return Gwindow
      */
-    public abstract GWindow getWindow(String sWindowID);
+    public abstract GWindow getWindow(String sWindowTitle);
+
+//    /**
+//     * 
+//     * Get component from its ID and the host window
+//     * 
+//     * <p>
+//     * 
+//     * @param sComponentID
+//     * @param gWindow
+//     * @return GComponent
+//     */
+//   // public abstract GComponent getComponent(String sComponentID, GWindow gWindow);
 
     /**
-     * 
-     * Get component from its ID and the host window
-     * 
-     * <p>
-     * 
-     * @param sComponentID
-     * @param gWindow
-     * @return GComponent
-     */
-    public abstract GComponent getComponent(String sComponentID, GWindow gWindow);
-
-    /**
-     * Get an action from its ID
+     * Get an action from its name
      * 
      * <p>
      * 
