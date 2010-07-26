@@ -27,6 +27,7 @@ import org.netbeans.jemmy.QueueTool;
 
 import edu.umd.cs.guitar.exception.GException;
 import edu.umd.cs.guitar.model.GApplication;
+import edu.umd.cs.guitar.model.GHashcodeGenerator;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.IO;
 import edu.umd.cs.guitar.model.data.AttributesType;
@@ -45,6 +46,37 @@ import edu.umd.cs.guitar.util.GUITARLog;
 public class StateMonitorFull extends GTestMonitor {
 
 	static ObjectFactory factory = new ObjectFactory();
+	
+	GHashcodeGenerator hashcodeGenerator ;
+
+
+
+	/**
+	 * @return the hashcodeGenerator
+	 */
+	public GHashcodeGenerator getHashcodeGenerator() {
+		return hashcodeGenerator;
+	}
+
+	/**
+	 * @param hashcodeGenerator
+	 * @param sStateFile
+	 * @param delay
+	 */
+	public StateMonitorFull(GHashcodeGenerator hashcodeGenerator,
+			String sStateFile, int delay) {
+		super();
+		this.hashcodeGenerator = hashcodeGenerator;
+		this.sStateFile = sStateFile;
+		this.delay = delay;
+	}
+
+	/**
+	 * @param hashcodeGenerator the hashcodeGenerator to set
+	 */
+	public void setHashcodeGenerator(GHashcodeGenerator hashcodeGenerator) {
+		this.hashcodeGenerator = hashcodeGenerator;
+	}
 
 	/**
 	 * Output GUIState file
@@ -135,14 +167,6 @@ public class StateMonitorFull extends GTestMonitor {
 		
 		windowsNew.removeAll(windowsBeforeStep);
 
-//		GUITARLog.log.info("DEBUG ************************************");
-//		
-//		GUITARLog.log.info("windowsAfterStep size:" + guiState.getGUI().size());
-//		
-//		GUITARLog.log.info("windowsBeforeStep size:" + windowsBeforeStep);
-//		GUITARLog.log.info("Window new size:" + windowsNew.size() );
-//		GUITARLog.log.info("DEBUG ************************************");
-		
 		if (windowsNew.size() > 0) {
 			GUITARLog.log.info("New window(s) open");
 			for (String sID : windowsNew)
@@ -155,14 +179,6 @@ public class StateMonitorFull extends GTestMonitor {
 
 			GUIStructureWrapper guiStateAdapter = new GUIStructureWrapper(
 					guiState);
-			
-
-			// System.out.println("SIGNATURE:");
-			// for(PropertyType p: ID){
-			// System.out.println("\t" + p.getName());
-			// System.out.println("\t" + p.getValue());
-			// }
-			//			
 			
 			guiStateAdapter.addValueBySignature(signature,
 					GUITARConstants.INVOKELIST_TAG_NAME, windowsNew);
