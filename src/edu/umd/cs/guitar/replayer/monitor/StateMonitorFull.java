@@ -180,6 +180,7 @@ public class StateMonitorFull extends GTestMonitor {
 			GUIStructureWrapper guiStateAdapter = new GUIStructureWrapper(
 					guiState);
 			
+			guiStateAdapter.generateID(hashcodeGenerator);
 			guiStateAdapter.addValueBySignature(signature,
 					GUITARConstants.INVOKELIST_TAG_NAME, windowsNew);
 		
