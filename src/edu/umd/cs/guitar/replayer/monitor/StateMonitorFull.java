@@ -28,6 +28,7 @@ import org.netbeans.jemmy.QueueTool;
 import edu.umd.cs.guitar.exception.GException;
 import edu.umd.cs.guitar.model.GApplication;
 import edu.umd.cs.guitar.model.GHashcodeGenerator;
+import edu.umd.cs.guitar.model.GIDGenerator;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.IO;
 import edu.umd.cs.guitar.model.data.AttributesType;
@@ -48,6 +49,23 @@ public class StateMonitorFull extends GTestMonitor {
 	static ObjectFactory factory = new ObjectFactory();
 
 	GHashcodeGenerator hashcodeGenerator;
+
+	GIDGenerator idGenerator;
+
+	/**
+	 * @return the idGenerator
+	 */
+	public GIDGenerator getIdGenerator() {
+		return idGenerator;
+	}
+
+	/**
+	 * @param idGenerator
+	 *            the idGenerator to set
+	 */
+	public void setIdGenerator(GIDGenerator idGenerator) {
+		this.idGenerator = idGenerator;
+	}
 
 	/**
 	 * @return the hashcodeGenerator
@@ -167,8 +185,7 @@ public class StateMonitorFull extends GTestMonitor {
 		windowsNew.removeAll(windowsBeforeStep);
 
 		GUIStructureWrapper guiStateAdapter = new GUIStructureWrapper(guiState);
-		guiStateAdapter.generateID(hashcodeGenerator);
-
+		// guiStateAdapter.generateID(hashcodeGenerator);
 		if (windowsNew.size() > 0) {
 			GUITARLog.log.info("New window(s) open");
 			for (String sID : windowsNew)
@@ -183,6 +200,11 @@ public class StateMonitorFull extends GTestMonitor {
 					GUITARConstants.INVOKELIST_TAG_NAME, windowsNew);
 
 		}
+
+		if (idGenerator != null)
+			idGenerator.generateID(guiState);
+		else
+			GUITARLog.log.warn("No ID Generator assigned");
 
 		step.setGUIStructure(guiState);
 
