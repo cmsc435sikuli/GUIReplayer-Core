@@ -46,10 +46,8 @@ import edu.umd.cs.guitar.util.GUITARLog;
 public class StateMonitorFull extends GTestMonitor {
 
 	static ObjectFactory factory = new ObjectFactory();
-	
-	GHashcodeGenerator hashcodeGenerator ;
 
-
+	GHashcodeGenerator hashcodeGenerator;
 
 	/**
 	 * @return the hashcodeGenerator
@@ -72,7 +70,8 @@ public class StateMonitorFull extends GTestMonitor {
 	}
 
 	/**
-	 * @param hashcodeGenerator the hashcodeGenerator to set
+	 * @param hashcodeGenerator
+	 *            the hashcodeGenerator to set
 	 */
 	public void setHashcodeGenerator(GHashcodeGenerator hashcodeGenerator) {
 		this.hashcodeGenerator = hashcodeGenerator;
@@ -144,7 +143,7 @@ public class StateMonitorFull extends GTestMonitor {
 
 		GUITARLog.log.info("Delaying for " + delay
 				+ " ms to get a stable GUI state....");
-		
+
 		new QueueTool().waitEmpty(delay);
 		// try {
 		// Thread.sleep(delay);
@@ -157,15 +156,18 @@ public class StateMonitorFull extends GTestMonitor {
 
 		List<StepType> lSteps = outTestCase.getStep();
 		StepType step = eStep.getStep();
-		
+
 		GUIStructure guiState = gApplication.getCurrentState();
 
 		// Check opened window
 		windowsAfterStep = gApplication.getCurrentWinID();
-		
+
 		Set<String> windowsNew = new HashSet<String>(windowsAfterStep);
-		
+
 		windowsNew.removeAll(windowsBeforeStep);
+
+		GUIStructureWrapper guiStateAdapter = new GUIStructureWrapper(guiState);
+		guiStateAdapter.generateID(hashcodeGenerator);
 
 		if (windowsNew.size() > 0) {
 			GUITARLog.log.info("New window(s) open");
@@ -177,16 +179,11 @@ public class StateMonitorFull extends GTestMonitor {
 			AttributesType signature = factory.createAttributesType();
 			signature.setProperty(ID);
 
-			GUIStructureWrapper guiStateAdapter = new GUIStructureWrapper(
-					guiState);
-			
-			guiStateAdapter.generateID(hashcodeGenerator);
 			guiStateAdapter.addValueBySignature(signature,
 					GUITARConstants.INVOKELIST_TAG_NAME, windowsNew);
-		
+
 		}
-		
-		
+
 		step.setGUIStructure(guiState);
 
 		lSteps.add(step);
