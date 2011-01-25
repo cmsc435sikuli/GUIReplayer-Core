@@ -202,7 +202,6 @@ public class Replayer {
 			for (GTestMonitor monitor : lTestMonitor) {
 				monitor.term();
 			}
-			monitor.cleanUp();
 
 		} catch (GException e) {
 			// GUITARLog.log.error("GUITAR Exception", e);
@@ -210,6 +209,8 @@ public class Replayer {
 				monitor.exceptionHandler(e);
 			}
 			throw e;
+		} finally {
+			monitor.cleanUp();
 		}
 	}
 
