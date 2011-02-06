@@ -1,0 +1,9 @@
+[patterns]
+**.py = native
+**.xml = native
+**.txt = native
+Makefile = LF
+**.jar = BIN
+**.dll = BIN
+**.sh = LF
+**.bat = CRLF
