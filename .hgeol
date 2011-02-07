@@ -1,0 +1,5 @@
+[patterns]
+**.java = native
+**.xml = native
+**.txt = native
+**.properties = native
