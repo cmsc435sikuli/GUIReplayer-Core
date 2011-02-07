@@ -6,13 +6,7 @@
     <echo message="No files to generate for module ${module}" />
   </target>
 
-  <!-- Default classpath -->
-  <path id="classpath.ref" />
-
-  <!-- Default dependency list -->
-  <property name="dependency_list" value="" />
-
-  <target name="build" depends="generate">
+  <target name="build" depends="depends,generate">
     <mkdir dir="${bin.dir}" />
     
     <javac srcdir="${src.dir}" destdir="${bin.dir}" debug="${debug}">
@@ -38,10 +32,13 @@
   </target>
 
   <target name="dist">
+    <property name="target" value="dist" />
     <ant antfile="install/build.xml" target="build" />
     <ant antfile="install/build.xml" target="doc" />
   </target>
 
+  <!-- Default dependency list (used for hg) -->
+  <property name="dependency_list" value="" />
   <target name="depends">
     <!-- Clone repositories (if necessary) -->
     <exec executable="python">
@@ -49,11 +46,10 @@
       <arg value="${dependency_list}" />
     </exec>
 
-    <!-- Build dependencies using python (it handles lists better) -->
-    <exec executable="python">
-      <arg value="${shared.lib.dir}/python/build.py" />
-      <arg value="${dependency_list}" />
-    </exec>
+    <property name="target" value="build" />
+    <subant target="${target}">
+      <path refid="dependency_list.buildfiles" />
+    </subant>
   </target>
 
   <target name="all">

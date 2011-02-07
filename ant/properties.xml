@@ -12,4 +12,9 @@
   <property name="coverage.dir" value="${root.dir}/coverage" />
   <property file="${shared.lib.dir}/ant/libs.properties" />
 
+  <!-- Default classpath -->
+  <path id="classpath" />
+  <!-- Default dependency list -->
+  <path id="dependency_list.buildfiles" />
+
 </project>
