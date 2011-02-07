@@ -48,7 +48,11 @@
 
   <property name="module" value="GUIReplayer-Core" />
   <import file="../../shared/ant/properties.xml" />
+
   <property name="dependency_list" value="GUITARModel-Core" />
+  <path id="dependency_list.buildfiles">
+    <fileset file="${root.dir}/GUITARModel-Core/install/build.xml" />
+  </path>
 
   <path id="classpath">
     <fileset file="${args4j}" />
