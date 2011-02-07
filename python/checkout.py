@@ -12,7 +12,7 @@ def main(argv):
                           'http://localhost/hg/guitar/hgweb.cgi/')[:-len('shared')]
     print 'using %s as remote repository path' % path[:-1]
 
-    for module in argv:
+    for module in reduce(lambda x, y: x + y.split(','), argv, []):
         if not os.path.exists(os.path.join(destdir, module)):
             # Attempt to clone the repository to the destination
             url = '%s%s' % (path, module)

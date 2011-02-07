@@ -1,0 +1,64 @@
+
+<project name="${module}">
+  <!-- Common ant tasks implementations for all modules -->
+  <target name="common-build">
+    <mkdir dir="${bin.dir}" />
+    
+    <javac srcdir="${src.dir}" destdir="${bin.dir}" debug="${debug}">
+      <include name="**/*.java" />
+      <classpath>
+        <fileset dir="${jar.dir}" includes="**/*.jar" />
+        <pathelement path="${classpath}" />
+      </classpath>
+    </javac>
+    
+    <jar destfile="${jar.dir}/${module}.jar">
+      <fileset dir="${bin.dir}" includes="**/*.class" />
+    </jar>
+  </target>
+
+  <target name="common-doc">
+    <echo message="TODO: Generate documentation for ${module}" />
+  </target>
+
+  <target name="common-clean">
+    <delete dir="${bin.dir}" />
+    <delete file="${jar.dir}/${module}.jar" />
+  </target>
+
+  <target name="dist">
+    <ant antfile="install/build.xml" target="build" />
+    <ant antfile="install/build.xml" target="doc" />
+  </target>
+
+  <target name="depends">
+    <!-- Clone repositories (if necessary) -->
+    <exec executable="python">
+      <arg value="${shared.lib.dir}/python/checkout.py" />
+      <arg value="${dependency_list}" />
+    </exec>
+
+    <!-- Build dependencies using python (it handles lists better) -->
+    <exec executable="python">
+      <arg value="${shared.lib.dir}/python/build.py" />
+      <arg value="${dependency_list}" />
+    </exec>
+  </target>
+
+  <target name="all">
+    <ant antfile="install/build.xml" target="depends" />
+    <ant antfile="install/build.xml" target="dist" />
+  </target>
+
+  <target name="help">
+    <echo message="Available targets for ${module}:" />
+    <echo message="  help:    Displays this help." />
+    <echo message="  clean:   Removes output files created by other targets." />
+    <echo message="  doc:     Generates documentation." />
+    <echo message="  build:   Builds source code and library." />
+    <echo message="  depends: Builds dependencies." />
+    <echo message="  dist:    Builds source code, libraries, and documentation." />
+    <echo message="  all:     Builds dist and depends." />
+    <echo message="  install: Installs this library and dependencies." />
+  </target>
+</project>
