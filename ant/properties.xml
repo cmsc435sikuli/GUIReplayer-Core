@@ -1,0 +1,15 @@
+
+<project name="Default Properties">
+
+  <!-- Default properties -->
+  <property name="root.dir" value=".." />
+  <property name="src.dir" value="src" />
+  <property name="bin.dir" value="bin" />
+  <property name="jar.dir" value="${root.dir}/jars" />
+  <property name="shared.lib.dir" value="${root.dir}/shared" />
+  <property name="ant.dir" value="${shared.lib.dir}/ant/lib" />
+  <property name="resources.dir" value="resources" />
+  <property name="coverage.dir" value="${root.dir}/coverage" />
+  <property file="${shared.lib.dir}/ant/libs.properties" />
+
+</project>

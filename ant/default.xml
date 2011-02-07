@@ -1,14 +1,25 @@
 
-<project name="${module}">
-  <!-- Common ant tasks implementations for all modules -->
-  <target name="common-build">
+<project name="Common Tasks">
+
+  <target name="generate">
+    <!-- Used to generate files and build files -->
+    <echo message="No files to generate for module ${module}" />
+  </target>
+
+  <!-- Default classpath -->
+  <path id="classpath.ref" />
+
+  <!-- Default dependency list -->
+  <property name="dependency_list" value="" />
+
+  <target name="build" depends="generate">
     <mkdir dir="${bin.dir}" />
     
     <javac srcdir="${src.dir}" destdir="${bin.dir}" debug="${debug}">
       <include name="**/*.java" />
       <classpath>
         <fileset dir="${jar.dir}" includes="**/*.jar" />
-        <pathelement path="${classpath}" />
+        <path refid="classpath" />
       </classpath>
     </javac>
     
@@ -17,11 +28,11 @@
     </jar>
   </target>
 
-  <target name="common-doc">
+  <target name="doc">
     <echo message="TODO: Generate documentation for ${module}" />
   </target>
 
-  <target name="common-clean">
+  <target name="clean">
     <delete dir="${bin.dir}" />
     <delete file="${jar.dir}/${module}.jar" />
   </target>
@@ -61,4 +72,5 @@
     <echo message="  all:     Builds dist and depends." />
     <echo message="  install: Installs this library and dependencies." />
   </target>
+
 </project>
