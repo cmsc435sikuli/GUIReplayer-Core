@@ -1,5 +1,5 @@
 
-<project name="Common Tasks">
+<project name="common">
 
   <target name="generate">
     <!-- Used to generate files and build files -->
@@ -8,6 +8,7 @@
 
   <target name="build" depends="depends,generate">
     <mkdir dir="${bin.dir}" />
+    <mkdir dir="${jar.dir}" />
     
     <javac srcdir="${src.dir}" destdir="${bin.dir}" debug="true">
       <include name="**/*.java" />
