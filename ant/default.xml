@@ -9,7 +9,7 @@
   <target name="build" depends="depends,generate">
     <mkdir dir="${bin.dir}" />
     
-    <javac srcdir="${src.dir}" destdir="${bin.dir}" debug="${debug}">
+    <javac srcdir="${src.dir}" destdir="${bin.dir}" debug="true">
       <include name="**/*.java" />
       <classpath>
         <fileset dir="${jar.dir}" includes="**/*.jar" />
