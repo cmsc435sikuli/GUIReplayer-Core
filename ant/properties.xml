@@ -5,6 +5,7 @@
   <property name="root.dir" value=".." />
   <property name="src.dir" value="src" />
   <property name="bin.dir" value="bin" />
+  <property name="instr.dir" value="instr" />
   <property name="jar.dir" value="${root.dir}/jars" />
   <property name="shared.lib.dir" value="${root.dir}/shared" />
   <property name="ant.dir" value="${shared.lib.dir}/ant/lib" />

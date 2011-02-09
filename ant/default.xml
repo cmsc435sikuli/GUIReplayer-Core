@@ -29,7 +29,9 @@
 
   <target name="clean">
     <delete dir="${bin.dir}" />
+    <delete dir="${instr.dir}" />
     <delete file="${jar.dir}/${module}.jar" />
+    <delete file="${coverage.dir}/${module}.ser" />
   </target>
 
   <target name="dist">
@@ -53,6 +55,82 @@
     </subant>
   </target>
 
+  <!-- Cobertura Instrumentation -->
+  <property name="cobertura.dir" value="${shared.lib.dir}/cobertura" />
+  <path id="cobertura.lib">
+    <fileset dir="${cobertura.dir}">
+      <include name="cobertura.jar" />
+      <include name="lib/**/*.jar" />
+    </fileset>
+  </path>
+
+  <taskdef resource="tasks.properties" classpathref="cobertura.lib" />
+
+  <target name="instr-depends" if="instr.depends">
+    <subant target="instrument">
+      <path refid="dependency_list.buildfiles" />
+      <property name="instr.parent" value="true" />
+    </subant>
+  </target>
+
+  <target name="instr-create">
+    <mkdir dir="${coverage.dir}" />
+    <cobertura-instrument
+       datafile="${coverage.dir}/${module}.ser" todir="${instr.dir}">
+      <fileset dir="${bin.dir}" includes="edu/**/*.class" />
+    </cobertura-instrument>
+
+    <!-- Replace the non-instrumented class files in the jar -->
+    <jar destfile="${jar.dir}/${module}.jar" update="true">
+      <fileset dir="${instr.dir}" includes="**/*.class" />
+    </jar>
+  </target>
+
+  <!-- Merges the cobertura files into a single cobertura file.
+       This should only be used on the final module (aka the one that
+       asked for instrumentation). This gets disabled automatically
+       by setting the instr.parent property. This way, only the top
+       level calling build file performs a merge. -->
+  <target name="instr-merge" unless="instr.parent">
+    <cobertura-merge datafile="${root.dir}/cobertura.ser">
+      <fileset dir="${coverage.dir}" includes="**/*.ser" />
+    </cobertura-merge>
+  </target>
+
+  <!-- Instruments the code. After being instrumented, run the program as
+       normal. Call the 'report' target to get the coverage report after
+       running the application. -->
+  <target name="instrument"
+          depends="build,instr-depends,instr-create,instr-merge" />
+
+  <target name="restore">
+    <delete file="${jar.dir}/${module}.jar" />
+    <jar destfile="${jar.dir}/${module}.jar">
+      <fileset dir="${bin.dir}" includes="**/*.class" />
+    </jar>
+  </target>
+
+  <target name="report">
+    <mkdir dir="${coverage.dir}" />
+    <!-- TODO: Source directories of dependent modules -->
+    <cobertura-report format="xml" destdir="${coverage.dir}"
+                      datafile="${root.dir}/cobertura.ser">
+      <fileset dir="${src.dir}" includes="**/*.java" />
+    </cobertura-report>
+
+    <cobertura-report format="html" destdir="${coverage.dir}"
+                      datafile="${root.dir}/cobertura.ser">
+      <fileset dir="${src.dir}" includes="**/*.java" />
+    </cobertura-report>
+
+    <!-- Remove instrumented classes from the jar -->
+    <antcall target="restore" />
+    <subant target="restore">
+      <path refid="dependency_list.buildfiles" />
+    </subant>
+  </target>
+  <!-- Cobertura Instrumentation -->
+
   <target name="all">
     <ant antfile="install/build.xml" target="depends" />
     <ant antfile="install/build.xml" target="dist" />
@@ -60,14 +138,16 @@
 
   <target name="help">
     <echo message="Available targets for ${module}:" />
-    <echo message="  help:    Displays this help." />
-    <echo message="  clean:   Removes output files created by other targets." />
-    <echo message="  doc:     Generates documentation." />
-    <echo message="  build:   Builds source code and library." />
-    <echo message="  depends: Builds dependencies." />
-    <echo message="  dist:    Builds source code, libraries, and documentation." />
-    <echo message="  all:     Builds dist and depends." />
-    <echo message="  install: Installs this library and dependencies." />
+    <echo message="  help:       Displays this help." />
+    <echo message="  clean:      Removes output files created by other targets." />
+    <echo message="  doc:        Generates documentation." />
+    <echo message="  build:      Builds source code and library." />
+    <echo message="  instrument: Instruments the module for a code coverage report." />
+    <echo message="  report:     Reports the code coverage." />
+    <echo message="  depends:    Builds dependencies." />
+    <echo message="  dist:       Builds source code, libraries, and documentation." />
+    <echo message="  all:        Builds dist and depends." />
+    <echo message="  install:    Installs this library and dependencies." />
   </target>
 
 </project>
