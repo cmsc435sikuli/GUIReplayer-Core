@@ -7,15 +7,23 @@ def main(argv):
     destdir = os.path.abspath(os.path.join(__file__, '..', '..', '..'))
 
     # Read the configuration file for the shared repository to get the pull path
-    repo = hg.repository(ui.ui(), os.path.join(destdir, 'shared'))
-    path = repo.ui.config('paths', 'default',
-                          'http://localhost/hg/guitar/hgweb.cgi/')[:-len('shared')]
-    print 'using %s as remote repository path' % path[:-1]
+    repo = hg.repository(ui.ui(), os.path.join(__file__, '..', '..'))
+    sharedpath = repo.ui.config('paths', 'default', None)
+    if sharedpath is None:
+        raise Exception('no default path in the shared directory!')
+
+    unstable = sharedpath.endswith('-unstable')
+    path = os.path.dirname(sharedpath)
+    print 'using %s as remote repository path' % path
 
     for module in reduce(lambda x, y: x + y.split(','), argv, []):
+        if module.endswith('-unstable'):
+            module = module[:-len('-unstable')]
+
         if not os.path.exists(os.path.join(destdir, module)):
             # Attempt to clone the repository to the destination
-            url = '%s%s' % (path, module)
+            url = os.path.join(
+                '%s' % path, '%s%s' % (module, '-unstable' if unstable else ''))
             print 'checking out %s to %s' % (url, destdir)
             commands.clone(ui.ui(), url, os.path.join(destdir, module))
         else:
