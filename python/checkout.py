@@ -4,10 +4,12 @@ from mercurial import commands, ui, hg
 
 def main(argv):
     # Find destination directory based on current file location
-    destdir = os.path.abspath(os.path.join(__file__, '..', '..', '..'))
+    destdir = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), '..', '..'))
 
     # Read the configuration file for the shared repository to get the pull path
-    repo = hg.repository(ui.ui(), os.path.join(__file__, '..', '..'))
+    repo = hg.repository(
+        ui.ui(), os.path.join(os.path.dirname(__file__), '..'))
     sharedpath = repo.ui.config('paths', 'default', None)
     if sharedpath is None:
         raise Exception('no default path in the shared directory!')
