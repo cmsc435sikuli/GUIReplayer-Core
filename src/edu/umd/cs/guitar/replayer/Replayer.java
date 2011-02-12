@@ -140,33 +140,6 @@ public class Replayer {
 	}
 
 	/**
-	 * Constructor for the replayer
-	 * 
-	 * @param tc
-	 *            input test case
-	 * @param log
-	 *            log object
-	 */
-	@Deprecated
-	public Replayer(TestCase tc, Logger log) {
-		super();
-		this.tc = tc;
-		this.log = log;
-	}
-
-	/**
-	 * Constructor for the replayer
-	 * 
-	 * @param tc
-	 *            input test case
-	 */
-	@Deprecated
-	public Replayer(TestCase tc) {
-		super();
-		this.tc = tc;
-	}
-
-	/**
 	 * Parse and run test case.
 	 * 
 	 * @throws ComponentNotFound
@@ -415,56 +388,6 @@ public class Replayer {
 		}
 		return sWindowName;
 	}
-
-	// /**
-	// * Get Widget ID from eventID
-	// *
-	// * @return
-	// */
-	// private String getWidgetID(String sTag, String sEventID) {
-	// String sWidgetID = null;
-	// // get widget ID
-	// XPath xpath = XPathFactory.newInstance().newXPath();
-	// XPathExpression expr;
-	// Object result;
-	// NodeList nodes;
-	// try {
-	//
-	// expr = xpath.compile("/EFG/Events/Event[EventId=\"" + sEventID
-	// + "\"]/" + sTag + "/text()");
-	// result = expr.evaluate(docEFG, XPathConstants.NODESET);
-	// nodes = (NodeList) result;
-	// if (nodes.getLength() > 0)
-	// sWidgetID = nodes.item(0).getNodeValue();
-	// } catch (XPathExpressionException e) {
-	// // TODO Auto-generated catch block
-	// }
-	// return sWidgetID;
-	// }
-
-	// /**
-	// * @return
-	// */
-	// private String getWidgetID_bak(String sTag, String sEventID) {
-	// String sWidgetID = null;
-	// // get widget ID
-	// XPath xpath = XPathFactory.newInstance().newXPath();
-	// XPathExpression expr;
-	// Object result;
-	// NodeList nodes;
-	// try {
-	//
-	// expr = xpath.compile("/EFG/Events/Event[EventId=\"" + sEventID
-	// + "\"]/" + sTag + "/text()");
-	// result = expr.evaluate(docEFG, XPathConstants.NODESET);
-	// nodes = (NodeList) result;
-	// if (nodes.getLength() > 0)
-	// sWidgetID = nodes.item(0).getNodeValue();
-	// } catch (XPathExpressionException e) {
-	// // TODO Auto-generated catch block
-	// }
-	// return sWidgetID;
-	// }
 
 	/**
 	 * Get the replayer monitor

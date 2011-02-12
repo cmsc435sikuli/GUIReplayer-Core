@@ -55,11 +55,18 @@
   </path>
 
   <path id="classpath">
-    <fileset file="${args4j}" />
+    <fileset file="${apache-cli}" />
     <fileset file="${log4j}" />
     <fileset file="${jemmy}" />
   </path>
 
   <import file="../../shared/ant/default.xml" />
+
+  <target name="build" depends="common.build">
+    <!-- Copy over gripper launcher program -->
+    <copy file="${root.dir}/guitar/launchers/greplayer.template"
+          tofile="${root.dir}/greplayer" failonerror="false" />
+    <chmod file="${root.dir}/greplayer" perm="775" />
+  </target>
 
 </project>
