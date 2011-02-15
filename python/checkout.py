@@ -24,8 +24,7 @@ def main(argv):
 
         if not os.path.exists(os.path.join(destdir, module)):
             # Attempt to clone the repository to the destination
-            url = os.path.join(
-                '%s' % path, '%s%s' % (module, '-unstable' if unstable else ''))
+            url = '%s/%s%s' % (path, module, '-unstable' if unstable else '')
             print 'checking out %s to %s' % (url, destdir)
             commands.clone(ui.ui(), url, os.path.join(destdir, module))
         else:
