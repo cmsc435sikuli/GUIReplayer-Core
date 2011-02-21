@@ -1,6 +1,7 @@
 
 import os, sys
 from mercurial import commands, ui, hg
+from subprocess import call
 
 def main(argv):
     # Find destination directory based on current file location
@@ -24,9 +25,12 @@ def main(argv):
 
         if not os.path.exists(os.path.join(destdir, module)):
             # Attempt to clone the repository to the destination
-            url = '%s/%s%s' % (path, module, '-unstable' if unstable else '')
-            print 'checking out %s to %s' % (url, destdir)
-            commands.clone(ui.ui(), url, os.path.join(destdir, module))
+			if module[-len("Sikuli"):] == "Sikuli":
+				call("git clone git@github.com:cmsc435sikuli/" + module + ".git " + destdir + "/" +  module, shell=True)
+			else:
+				url = '%s/%s%s' % (path, module, '-unstable' if unstable else '')
+				print 'checking out %s to %s' % (url, destdir)
+				commands.clone(ui.ui(), url, os.path.join(destdir, module))
         else:
             # Repository already exists, skip
             print '%s already exists (skipping)' % module
