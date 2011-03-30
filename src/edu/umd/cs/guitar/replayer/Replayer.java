@@ -284,6 +284,8 @@ public class Replayer {
 		String sWidgetID = null;
 		String sAction = null;
 		String sWidgetReal = null;
+		boolean guitarFailed = false;
+
 
 		List<EventType> lEvents = efg.getEvents().getEvent();
 
@@ -345,15 +347,16 @@ public class Replayer {
 
 		GComponent gComponent = containter.getFirstChild(IDAdapter);
 
-		if (gComponent == null)
-			throw new ComponentNotFound();
-
-		GUITARLog.log.info("FOUND");
-		GUITARLog.log.info("Widget Title: *" + gComponent.getTitle() + "*");
-		GUITARLog.log.info("");
-		if (!gComponent.isEnable())
+		if (gComponent == null){
+			guitarFailed = true;
+		}
+		else{
+		    GUITARLog.log.info("FOUND");
+		    GUITARLog.log.info("Widget Title: *" + gComponent.getTitle() + "*");
+		    GUITARLog.log.info("");
+		    if (!gComponent.isEnable())
 			throw new ComponentDisabled();
-
+		}
 		// Actions
 		GEvent gEvent = monitor.getAction(sAction);
 		List<String> parameters = step.getParameter();
@@ -538,15 +541,22 @@ public class Replayer {
 				Pattern pat = new Pattern(text);
 				pat = pat.exact();
 
+				//hybrid mode -- if guitar failed to recognize a component, Sikuli looks it
+				//up in the XML file and tries to click on it.
 				if(mode == 1){				
 					s.find(pat);
+					if(guitarFailed == true){
+						s.click(pat,0);
+					}
+					else{
 					if (parameters == null)
 						gEvent.perform(gComponent, optionalValues);
 					else if (parameters.size() == 0) 
 						gEvent.perform(gComponent, optionalValues);
 					else
 						gEvent.perform(gComponent, parameters, optionalValues);
-
+					}
+				//just Sikuli mode
 				}else
 					s.click(pat,0);
 				}
@@ -565,6 +575,10 @@ public class Replayer {
 					if(nodes.getLength() > 0)
 						text = nodes.item(0).getNodeValue();
 					else{
+						
+
+
+
 						GUITARLog.log.error("Component ID not found");
 						throw new ComponentNotFound();
 					}
