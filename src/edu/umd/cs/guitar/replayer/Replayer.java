@@ -17,9 +17,11 @@
  *	IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
  *	THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  */
+
 package edu.umd.cs.guitar.replayer;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -61,6 +63,8 @@ import edu.umd.cs.guitar.replayer.monitor.TestStepEndEventArgs;
 import edu.umd.cs.guitar.replayer.monitor.TestStepStartEventArgs;
 import edu.umd.cs.guitar.util.GUITARLog;
 
+import org.sikuli.script.*;
+
 /**
  * 
  * Main replayer class, monitoring the replayer's behaviors
@@ -90,8 +94,9 @@ public class Replayer {
 	private GUIStructureWrapper guiStructureAdapter;
 	private EFG efg;
 	private Document docGUI;
-
 	// private Document docEFG;
+
+	private int mode;
 
 	/**
 	 * @param tc
@@ -124,7 +129,35 @@ public class Replayer {
 		builder = domFactory.newDocumentBuilder();
 		docGUI = builder.parse(sGUIFile);
 		// docEFG = builder.parse(sEFGFile);
+		mode = 0;
 	}
+
+	public Replayer(TestCase tc, String sGUIFile, String sEFGFile, int mode)
+			throws ParserConfigurationException, SAXException, IOException {
+		super();
+		this.tc = tc;
+		this.sGUIFfile = sGUIFile;
+		this.sEFGFfile = sEFGFile;
+
+		// Initialize GUI object
+		GUIStructure gui = (GUIStructure) IO.readObjFromFile(sGUIFile,
+				GUIStructure.class);
+		guiStructureAdapter = new GUIStructureWrapper(gui);
+
+		// Initialize EFG object
+		this.efg = (EFG) IO.readObjFromFile(sEFGFile, EFG.class);
+
+		// Initialize EFG XML file
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory
+				.newInstance();
+		domFactory.setNamespaceAware(true);
+		DocumentBuilder builder;
+		builder = domFactory.newDocumentBuilder();
+		docGUI = builder.parse(sGUIFile);
+		// docEFG = builder.parse(sEFGFile);
+		this.mode = mode;
+	}
+
 
 	/**
 	 * Time out for the replayer TODO: Move to a monitor
@@ -146,11 +179,12 @@ public class Replayer {
 	 * 
 	 */
 	public void execute() throws ComponentNotFound {
-		// 
+		
 		try {
 			monitor.setUp();
 
 			log.info("Connecting to application...");
+
 			monitor.connectToApplication();
 
 			log.info("Application is connected.");
@@ -249,6 +283,7 @@ public class Replayer {
 		// String sWidgetID = getWidgetID("WidgetId", sEventID);
 		String sWidgetID = null;
 		String sAction = null;
+		String sWidgetReal = null;
 
 		List<EventType> lEvents = efg.getEvents().getEvent();
 
@@ -340,13 +375,228 @@ public class Replayer {
 			}
 		}
 
-		if (parameters == null)
-			gEvent.perform(gComponent, optionalValues);
-		else if (parameters.size() == 0) {
-			gEvent.perform(gComponent, optionalValues);
-		} else
-			gEvent.perform(gComponent, parameters, optionalValues);
+/*
+		if(mode != 0){
 
+		//get the file paths of every image in every widget
+		ArrayList<String> allIds = new ArrayList<String>();
+		NodeList nodes;
+		XPath xpath = XPathFactory.newInstance().newXPath();
+		XPathExpression expr;
+		Object result;
+		try {
+			String xpathExpression = "//Widget/Attributes/Property[Name=\"ID\"]/Value/text()";
+			expr = xpath.compile(xpathExpression);
+			result = expr.evaluate(docGUI, XPathConstants.NODESET);
+			nodes = (NodeList) result;
+			
+			for(int i = 0; i < nodes.getLength(); i++)
+				allIds.add(nodes.item(i).getNodeValue());
+			
+		} catch (XPathExpressionException e) {
+			GUITARLog.log.error(e);
+		}
+
+		System.out.println(allIds);
+
+
+		//For every widget in this GUI, take a new screenshot.  Later, compare the existing
+		//screenshot for this widget to all of these taken.  If one matches, it's correct.
+		for(String sID : allIds){
+
+		ComponentTypeWrapper comp2 = guiStructureAdapter
+				.getComponentFromID(sID);
+
+		List<PropertyType> ID2 = monitor.selectIDProperties(comp2
+				.getDComponentType());
+		List<PropertyTypeWrapper> IDAdapter2 = new ArrayList<PropertyTypeWrapper>();
+
+		for (PropertyType p : ID2)
+			IDAdapter2.add(new PropertyTypeWrapper(p));
+
+		GComponent containter2 = gWindow.getContainer();
+
+		GComponent gComponent2 = containter2.getFirstChild(IDAdapter);
+
+		}
+		//mode = 1 : Use Sikuli for verification, but use Guitar to interact
+		//mode = 2 : Use Sikuli to interact with the target.  Not Even remotely finished yet.
+
+
+		
+		String text = "";
+
+		try {
+			String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+			+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"Image\"]/Value/text()";			
+			expr = xpath.compile(xpathExpression);
+			result = expr.evaluate(docGUI, XPathConstants.NODESET);
+			nodes = (NodeList) result;
+			if (nodes.getLength() > 0)
+				text = nodes.item(0).getNodeValue();
+			else{
+				xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+				+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"BeforeImage\"]/Value/text()";
+
+				expr = xpath.compile(xpathExpression);
+				result = expr.evaluate(docGUI, XPathConstants.NODESET);
+				nodes = (NodeList) result;
+				text = nodes.item(0).getNodeValue();
+			}
+		} catch (XPathExpressionException e) {
+			GUITARLog.log.error(e);
+		}
+		
+			Screen s = new Screen();
+
+			try{
+				Pattern pat = new Pattern(text);
+				pat = pat.exact();
+
+				if(mode == 1)
+				//simply verify with sikuli that the component exists		
+				s.find(pat);
+				else{
+					System.out.println("Image is " + pat.getFilename());
+					s.click(pat,0);
+				}
+			}
+				catch(FindFailed e){
+					System.out.println("Image find failed!");
+					GUITARLog.log.error("Component ID not found");
+					throw new ComponentNotFound();
+				}		
+			}
+
+
+			//mode = 0 : the old Guitar method with no extra functionality
+
+			if(mode == 0){
+				sWidgetReal = sWidgetID;
+			}
+			if(sWidgetReal == null){
+				GUITARLog.log.error("Component ID not found");
+				throw new ComponentNotFound();
+			}
+		
+
+			if (parameters == null)
+				gEvent.perform(gComponent, optionalValues);
+			else if (parameters.size() == 0) 
+				gEvent.perform(gComponent, optionalValues);
+			else
+				gEvent.perform(gComponent, parameters, optionalValues);
+
+*/
+
+
+
+		//Mode = 0 : original guitar mode
+		if(mode == 0){
+			if (parameters == null)
+				gEvent.perform(gComponent, optionalValues);
+			else if (parameters.size() == 0) 
+				gEvent.perform(gComponent, optionalValues);
+			else
+				gEvent.perform(gComponent, parameters, optionalValues);
+		}
+
+		
+
+		//Mode = 1 : use Sikuli to verify, but Guitar to interact
+		//Mode = 2 : use Sikuli to interact
+		else{
+
+		XPath xpath = XPathFactory.newInstance().newXPath();
+		XPathExpression expr;
+		Object result = null;
+		NodeList nodes;
+		String text = "";
+		try {
+			String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+			+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"Image\"]/Value/text()";			
+			expr = xpath.compile(xpathExpression);
+			result = expr.evaluate(docGUI, XPathConstants.NODESET);
+			nodes = (NodeList) result;
+			if (nodes.getLength() > 0)
+				text = nodes.item(0).getNodeValue();
+			else{
+				xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+				+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"BeforeImage\"]/Value/text()";
+
+			expr = xpath.compile(xpathExpression);
+			result = expr.evaluate(docGUI, XPathConstants.NODESET);
+			nodes = (NodeList) result;
+			text = nodes.item(0).getNodeValue();
+			}
+		} catch (XPathExpressionException e) {
+			GUITARLog.log.error(e);
+		}
+			Screen s = new Screen();
+
+			try{
+				Pattern pat = new Pattern(text);
+				pat = pat.exact();
+
+				if(mode == 1){				
+					s.find(pat);
+					if (parameters == null)
+						gEvent.perform(gComponent, optionalValues);
+					else if (parameters.size() == 0) 
+						gEvent.perform(gComponent, optionalValues);
+					else
+						gEvent.perform(gComponent, parameters, optionalValues);
+
+				}else
+					s.click(pat,0);
+				}
+				//It's possible the component just isn't here, but try the AfterImage, if it exists
+				catch(FindFailed e){
+					System.out.println("Image find failed!");
+					try{
+					String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+					+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"AfterImage\"]/Value/text()";
+					expr = xpath.compile(xpathExpression);
+					result = expr.evaluate(docGUI, XPathConstants.NODESET);
+					} catch (XPathExpressionException ex) {
+						GUITARLog.log.error(ex);
+					}
+					nodes = (NodeList) result;
+					if(nodes.getLength() > 0)
+						text = nodes.item(0).getNodeValue();
+					else{
+						GUITARLog.log.error("Component ID not found");
+						throw new ComponentNotFound();
+					}
+					s = new Screen();
+
+					try{
+						Pattern pat = new Pattern(text);
+						pat = pat.exact();
+
+						if(mode == 1){				
+							s.find(pat);
+							if (parameters == null)
+								gEvent.perform(gComponent, optionalValues);
+							else if (parameters.size() == 0) 
+								gEvent.perform(gComponent, optionalValues);
+							else
+								gEvent.perform(gComponent, parameters, optionalValues);
+
+						}else
+							s.click(pat,0);
+						}
+				//now this is truly screwed.
+				catch(FindFailed ex){
+					GUITARLog.log.error("Component ID not found");
+					throw new ComponentNotFound();
+				}
+			}		
+		}
+
+
+		
+		
 		TestStepEndEventArgs stepEndArgs = new TestStepEndEventArgs(step,
 				gComponent.extractProperties(), gWindow.extractGUIProperties());
 		// -----------------------

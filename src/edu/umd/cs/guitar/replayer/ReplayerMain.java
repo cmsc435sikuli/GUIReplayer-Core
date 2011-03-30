@@ -43,6 +43,10 @@ public abstract class ReplayerMain {
 
         Replayer replayer;
         try {
+	    if(config.REPLAYER_MODE != 0)
+		replayer = new Replayer(tc, config.GUI_FILE, config.EFG_FILE, config.REPLAYER_MODE);
+		
+	    else
             replayer = new Replayer(tc, config.GUI_FILE, config.EFG_FILE);
             GReplayerMonitor monitor = createMonitor();
 
@@ -74,7 +78,9 @@ public abstract class ReplayerMain {
             GUITARLog.log.info("Time Elapsed: " + df.format(duration));
 
             printInfo();
+	System.exit(0);
         }
+
     }
 
     private void setupEnv() {

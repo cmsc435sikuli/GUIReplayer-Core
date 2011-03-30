@@ -48,6 +48,7 @@ public class GReplayerConfiguration {
         opts.addOption( "c", "config-file", true, "configuration file for the ripper defining terminal and ignored components/windows" );
         opts.addOption( "a", "args", true, "arguments for the application under test, separated by ';'" );
         opts.addOption( "h", "help", false, "Print this message" );
+	opts.addOption("m", "mode", true, "Mode for the Sikuli Replayer to be run in");
     }
 
     public void parseArguments(String[] args) throws ParseException {
@@ -67,10 +68,14 @@ public class GReplayerConfiguration {
         GUI_STATE_FILE = cmd.getOptionValue("gui-state", "GUITAR-Default.STA");
         LOG_FILE = cmd.getOptionValue("log-file", Util.getTimeStamp()+".log");
         CONFIG_FILE = cmd.getOptionValue("config-file", "configuration.xml");
-        DELAY = Integer.parseInt(cmd.getOptionValue("delay", "5000"));
+        DELAY = Integer.parseInt(cmd.getOptionValue("delay", "500"));
         ARGUMENT_LIST = cmd.getOptionValue("args", "");
         INITIAL_WAITING_TIME = Integer.parseInt(
             cmd.getOptionValue("initial-wait", "500"));
+
+	//come on, why is this not pushing?
+	REPLAYER_MODE = Integer.parseInt(cmd.getOptionValue("mode", "0"));
+
     }
 
     public String GUI_FILE;
@@ -82,4 +87,5 @@ public class GReplayerConfiguration {
     public int DELAY;
     public String ARGUMENT_LIST;
     public int INITIAL_WAITING_TIME;
+    public int REPLAYER_MODE;
 }
