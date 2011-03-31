@@ -192,12 +192,14 @@ public class StateMonitorFull extends GTestMonitor {
 				GUITARLog.log.info(sID);
 			GUITARLog.log.debug("By component: ");
 
+			if (eStep.component != null){
 			List<PropertyType> ID = monitor.selectIDProperties(eStep.component);
 			AttributesType signature = factory.createAttributesType();
 			signature.setProperty(ID);
 
 			guiStateAdapter.addValueBySignature(signature,
 					GUITARConstants.INVOKELIST_TAG_NAME, windowsNew);
+			}
 
 		}
 
