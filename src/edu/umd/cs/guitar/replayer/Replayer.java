@@ -96,7 +96,7 @@ public class Replayer {
 	private EFG efg;
 	private Document docGUI;
 	// private Document docEFG;
-	private float FUZZINESS = 0.97f;
+	private float FUZZINESS = 0.9f;
 
 	private int mode;
 
@@ -367,12 +367,14 @@ public class Replayer {
 				}
 			}
 	
+			if (mode == 0 || (mode == 1 && !guitarFailed)){
 			if (parameters == null)
 				gEvent.perform(gComponent, optionalValues);
 			else if (parameters.size() == 0) 
 				gEvent.perform(gComponent, optionalValues);
 			else
 				gEvent.perform(gComponent, parameters, optionalValues);
+			}
 			}else
 				guitarFailed = true;
 		
