@@ -26,6 +26,7 @@ import edu.umd.cs.guitar.util.GUITARLog;
 
 public abstract class ReplayerMain {
     protected GReplayerConfiguration config;
+     private String log4jFile;
 
     public ReplayerMain(GReplayerConfiguration config) {
         this.config = config;
@@ -33,6 +34,11 @@ public abstract class ReplayerMain {
 
     public void execute() {
         long nStartTime = System.currentTimeMillis();
+
+	log4jFile = config.LOG_FILE;
+        System.setProperty("file.name", log4jFile);
+        PropertyConfigurator.configure(GUITARConstants.LOG4J_PROPERTIES_FILE);
+
         setupEnv();
 
         GUITARLog.log = Logger.getLogger(ReplayerMain.class.getSimpleName());
@@ -76,9 +82,7 @@ public abstract class ReplayerMain {
             DateFormat df = new SimpleDateFormat("HH : mm : ss : SS");
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
             GUITARLog.log.info("Time Elapsed: " + df.format(duration));
-
-            printInfo();
-	System.exit(0);
+            //printInfo();
         }
 
     }
