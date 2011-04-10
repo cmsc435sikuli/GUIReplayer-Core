@@ -28,12 +28,21 @@ public class ComponentNotFound extends GException {
      * 
      */
     private static final long serialVersionUID = 3557270133868541729L;
-
+	private String widgetId;
     /**
      * 
      */
     public ComponentNotFound() {
+	widgetId = "";
         // TODO Auto-generated constructor stub
     }
+
+	public ComponentNotFound(String widget){
+		widgetId = widget;
+	}
+
+	public String getWidget(){
+		return widgetId;
+	}
 
 }

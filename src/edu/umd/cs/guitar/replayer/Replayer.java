@@ -301,16 +301,16 @@ public class Replayer {
 
 		if (sWidgetID == null) {
 			GUITARLog.log.error("Component ID not found");
-			throw new ComponentNotFound();
+			throw new ComponentNotFound(sEventID);
 		} else if (sAction == null) {
 			GUITARLog.log.error("Action not found");
-			throw new ComponentNotFound();
+			throw new ComponentNotFound(sWidgetID);
 		}
 		String sWindowID = getWindowName(sWidgetID);
 
 		if (sWindowID == null) {
 			GUITARLog.log.error("Window Title not found");
-			throw new ComponentNotFound();
+			throw new ComponentNotFound(sWidgetID);
 		}
 
 		GUITARLog.log.info("Window Title: *" + sWindowID + "*");
@@ -381,7 +381,7 @@ public class Replayer {
 		}else if (mode == 1)
 			guitarFailed = true;
 		else
-			throw new ComponentNotFound();
+			throw new ComponentNotFound(sWidgetID);
 		//Mode = 1 : use Sikuli if guitar fails 
 		//Mode = 2 : use Sikuli
 		if (mode == 2 || (mode == 1 && guitarFailed)){
@@ -436,7 +436,7 @@ public class Replayer {
 					text = nodes.item(0).getNodeValue();
 				else{
 					GUITARLog.log.error("Component ID not found");
-					throw new ComponentNotFound();
+					throw new ComponentNotFound(sWidgetID);
 				}
 				s = new Screen();
 	
@@ -450,7 +450,7 @@ public class Replayer {
 				//now this is truly screwed.
 				catch(FindFailed ex){
 					GUITARLog.log.error("Component ID not found");
-					throw new ComponentNotFound();
+					throw new ComponentNotFound(sWidgetID);
 				}
 			}
 		}
