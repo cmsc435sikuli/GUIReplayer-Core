@@ -35,6 +35,8 @@ public abstract class ReplayerMain {
 
     public void execute() {
         long nStartTime = System.currentTimeMillis();
+	long exTimeSum = 0;
+	boolean fail = false;
 	int tests = 0;
 	int failures = 0;
 
@@ -49,6 +51,7 @@ public abstract class ReplayerMain {
 	
 
 	for (String test : config.TESTCASE.split(",")){
+	fail = false;
 	long individualStartTime = System.currentTimeMillis();
 	tests++;
         TestCase tc = (TestCase) IO.readObjFromFile(
@@ -81,6 +84,7 @@ public abstract class ReplayerMain {
         }catch(ComponentNotFound e){
 		GUITARLog.log.error("Component not found : " + e.getWidget(), e);
 		failures++;
+		fail = true;
 	} 
 	catch (GException e) {
             GUITARLog.log.error("GUITAR Exception thrown", e);
@@ -90,6 +94,8 @@ public abstract class ReplayerMain {
             // Elapsed time
             long nEndTime = System.currentTimeMillis();
             long duration = nEndTime - individualStartTime;
+		if (!fail)
+			exTimeSum += duration;
             DateFormat df = new SimpleDateFormat("HH : mm : ss : SS");
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
             GUITARLog.log.info("Time Elapsed: " + df.format(duration));
@@ -104,6 +110,8 @@ public abstract class ReplayerMain {
 		GUITARLog.log.info((tests - failures) + " tests succeeded out of " + tests + " tests");
 		GUITARLog.log.info("Overall success rate: " + ((tests - failures) / ((float)(tests))) * 100 + "%");
             GUITARLog.log.info("Total Time Elapsed: " + df.format(duration));
+	if (tests != failures)
+            GUITARLog.log.info("Average execution time: " + df.format(exTimeSum/(tests-failures)));
 	//printInfo();
 		System.exit(0);
     }
