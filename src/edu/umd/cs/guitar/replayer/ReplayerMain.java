@@ -23,9 +23,11 @@ import edu.umd.cs.guitar.replayer.monitor.GTestMonitor;
 import edu.umd.cs.guitar.replayer.monitor.StateMonitorFull;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.util.GUITARLog;
+import edu.umd.cs.guitar.exception.ComponentNotFound;
 
 public abstract class ReplayerMain {
     protected GReplayerConfiguration config;
+     private String log4jFile;
 
     public ReplayerMain(GReplayerConfiguration config) {
         this.config = config;
@@ -33,13 +35,25 @@ public abstract class ReplayerMain {
 
     public void execute() {
         long nStartTime = System.currentTimeMillis();
+	long exTimeSum = 0;
+	boolean fail = false;
+	int tests = 0;
+	int failures = 0;
+
+	log4jFile = config.LOG_FILE;
+        System.setProperty("file.name", log4jFile);
+        PropertyConfigurator.configure(GUITARConstants.LOG4J_PROPERTIES_FILE);
+
         setupEnv();
 
         GUITARLog.log = Logger.getLogger(ReplayerMain.class.getSimpleName());
         printInfo();
+	
 
 	for (String test : config.TESTCASE.split(",")){
-	System.out.println(test);
+	fail = false;
+	long individualStartTime = System.currentTimeMillis();
+	tests++;
         TestCase tc = (TestCase) IO.readObjFromFile(
             test, TestCase.class);
 
@@ -67,23 +81,39 @@ public abstract class ReplayerMain {
             replayer.setMonitor(monitor);
 
             replayer.execute();
-        } catch (GException e) {
+        }catch(ComponentNotFound e){
+		GUITARLog.log.error("Component not found : " + e.getWidget(), e);
+		failures++;
+		fail = true;
+	} 
+	catch (GException e) {
             GUITARLog.log.error("GUITAR Exception thrown", e);
         } catch (Exception e) {
             GUITARLog.log.error("Exception thrown", e);
         } finally {
             // Elapsed time
             long nEndTime = System.currentTimeMillis();
-            long duration = nEndTime - nStartTime;
+            long duration = nEndTime - individualStartTime;
+		if (!fail)
+			exTimeSum += duration;
             DateFormat df = new SimpleDateFormat("HH : mm : ss : SS");
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
             GUITARLog.log.info("Time Elapsed: " + df.format(duration));
-
-            printInfo();
+            //printInfo();
         }
-}
-	System.exit(0);
+	}
 
+            long finalEndTime = System.currentTimeMillis();
+            long duration = finalEndTime - nStartTime;
+            DateFormat df = new SimpleDateFormat("HH : mm : ss : SS");
+            df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		GUITARLog.log.info((tests - failures) + " tests succeeded out of " + tests + " tests");
+		GUITARLog.log.info("Overall success rate: " + ((tests - failures) / ((float)(tests))) * 100 + "%");
+            GUITARLog.log.info("Total Time Elapsed: " + df.format(duration));
+	if (tests != failures)
+            GUITARLog.log.info("Average execution time: " + df.format(exTimeSum/(tests-failures)));
+	//printInfo();
+		System.exit(0);
     }
 
     private void setupEnv() {

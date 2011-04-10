@@ -18,5 +18,6 @@ public class Launcher {
         String[] pluginArgs = Arrays.copyOfRange(args, 1, args.length);
         ReplayerMain replayer = PluginFactory.createReplayer(pluginArgs, plugin);
         replayer.execute();
+	System.exit(0);
     }
 }
