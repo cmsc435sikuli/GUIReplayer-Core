@@ -38,8 +38,10 @@ public abstract class ReplayerMain {
         GUITARLog.log = Logger.getLogger(ReplayerMain.class.getSimpleName());
         printInfo();
 
+	for (String test : config.TESTCASE.split(",")){
+	System.out.println(test);
         TestCase tc = (TestCase) IO.readObjFromFile(
-            config.TESTCASE, TestCase.class);
+            test, TestCase.class);
 
         Replayer replayer;
         try {
@@ -78,8 +80,9 @@ public abstract class ReplayerMain {
             GUITARLog.log.info("Time Elapsed: " + df.format(duration));
 
             printInfo();
-	System.exit(0);
         }
+}
+	System.exit(0);
 
     }
 
