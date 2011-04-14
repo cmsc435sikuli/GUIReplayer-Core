@@ -292,183 +292,185 @@ public class Replayer {
 		List<EventType> lEvents = efg.getEvents().getEvent();
 
 		for (EventType event : lEvents) {
-			String eventID = event.getEventId();
-			if (sEventID.equals(eventID)) {
-				sWidgetID = event.getWidgetId();
-				sAction = event.getAction();
-			}
+		    String eventID = event.getEventId();
+		    if (sEventID.equals(eventID)) {
+			sWidgetID = event.getWidgetId();
+			sAction = event.getAction();
+		    }
 		}
-
+		
 		if (sWidgetID == null) {
-			GUITARLog.log.error("Component ID not found");
-			throw new ComponentNotFound(sEventID);
+		    GUITARLog.log.error("Component ID not found");
+		    throw new ComponentNotFound(sEventID);
 		} else if (sAction == null) {
-			GUITARLog.log.error("Action not found");
-			throw new ComponentNotFound(sWidgetID);
+		    GUITARLog.log.error("Action not found");
+		    throw new ComponentNotFound(sWidgetID);
 		}
 		String sWindowID = getWindowName(sWidgetID);
-
+		
 		if (sWindowID == null) {
-			GUITARLog.log.error("Window Title not found");
-			throw new ComponentNotFound(sWidgetID);
+		    GUITARLog.log.error("Window Title not found");
+		    throw new ComponentNotFound(sWidgetID);
 		}
-
+		
 		GUITARLog.log.info("Window Title: *" + sWindowID + "*");
 		GUITARLog.log.info("Widget ID: *" + sWidgetID + "*");
 		GUITARLog.log.info("");
-
+		
 		GUITARLog.log.info("Finding window *" + sWindowID + "*....");
-
+		
 		// TODO: Change this method to a fuzzy matching
 		GWindow gWindow = monitor.getWindow(sWindowID);
 		GUITARLog.log.info("FOUND");
 		GUITARLog.log.info("");
-
+		
 		ComponentTypeWrapper comp = guiStructureAdapter
-				.getComponentFromID(sWidgetID);
-
+		    .getComponentFromID(sWidgetID);
+		
 		GComponent gComponent = null;
 		if (comp != null){
-
-			List<PropertyType> ID = monitor.selectIDProperties(comp
-					.getDComponentType());
-			List<PropertyTypeWrapper> IDAdapter = new ArrayList<PropertyTypeWrapper>();
-	
-			for (PropertyType p : ID)
-				IDAdapter.add(new PropertyTypeWrapper(p));
-	
-	
-			GComponent containter = gWindow.getContainer();
-			GUITARLog.log.info("Finding widget *" + sWidgetID + "*....");
-	
-			gComponent = containter.getFirstChild(IDAdapter);
-	
-			if (gComponent != null){
-			    GUITARLog.log.info("FOUND");
-			    GUITARLog.log.info("Widget Title: *" + gComponent.getTitle() + "*");
-			    GUITARLog.log.info("");
-			    if (!gComponent.isEnable())
-				throw new ComponentDisabled();
+		    
+		    List<PropertyType> ID = monitor.selectIDProperties(comp
+								       .getDComponentType());
+		    List<PropertyTypeWrapper> IDAdapter = new ArrayList<PropertyTypeWrapper>();
+		    
+		    for (PropertyType p : ID)
+			IDAdapter.add(new PropertyTypeWrapper(p));
+		    
+		    
+		    GComponent containter = gWindow.getContainer();
+		    GUITARLog.log.info("Finding widget *" + sWidgetID + "*....");
+		    
+		    gComponent = containter.getFirstChild(IDAdapter);
+		    
+		    if (gComponent != null){
+			GUITARLog.log.info("FOUND");
+			GUITARLog.log.info("Widget Title: *" + gComponent.getTitle() + "*");
+			GUITARLog.log.info("");
+			if (!gComponent.isEnable())
+			    throw new ComponentDisabled();
 			// Actions
 			GEvent gEvent = monitor.getAction(sAction);
 			List<String> parameters = step.getParameter();
-	
+			
 			GUITARLog.log.info("Action: *" + sAction);
 			GUITARLog.log.info("");
-	
+			
 			// Optional data
 			AttributesType optional = comp.getDComponentType().getOptional();
 			Hashtable<String, List<String>> optionalValues = null;
 			
 			if (optional != null) {
-				optionalValues = new Hashtable<String, List<String>>();
-				for (PropertyType property : optional.getProperty()) {
-					optionalValues.put(property.getName(), property.getValue());
-				}
+			    optionalValues = new Hashtable<String, List<String>>();
+			    for (PropertyType property : optional.getProperty()) {
+				optionalValues.put(property.getName(), property.getValue());
+			    }
 			}
-	
+			
 			if (mode == 0 || (mode == 1 && !guitarFailed)){
-			if (parameters == null)
+			    if (parameters == null)
 				gEvent.perform(gComponent, optionalValues);
-			else if (parameters.size() == 0) 
+			    else if (parameters.size() == 0) 
 				gEvent.perform(gComponent, optionalValues);
-			else
+			    else
 				gEvent.perform(gComponent, parameters, optionalValues);
 			}
-			}else
-				guitarFailed = true;
-		
-		}else if (mode == 1)
+		    }
+		    else if(mode == 1)//end gComponent != null
 			guitarFailed = true;
+		    else throw new ComponentNotFound(sWidgetID);
+		    
+		}else if (mode == 1) //end comp = null
+		    guitarFailed = true;
 		else
-			throw new ComponentNotFound(sWidgetID);
+		    throw new ComponentNotFound(sWidgetID);
 		//Mode = 1 : use Sikuli if guitar fails 
 		//Mode = 2 : use Sikuli
 		if (mode == 2 || (mode == 1 && guitarFailed)){
-
-			XPath xpath = XPathFactory.newInstance().newXPath();
-			XPathExpression expr;
-			Object result = null;
-			NodeList nodes;
-			String text = "";
-			try {
-				String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
-				+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"Image\"]/Value/text()";			
-				expr = xpath.compile(xpathExpression);
-				result = expr.evaluate(docGUI, XPathConstants.NODESET);
-				nodes = (NodeList) result;
-				if (nodes.getLength() > 0)
-					text = nodes.item(0).getNodeValue();
-				else{
-					xpathExpression = "//Attributes[Property[Name=\"ID\" and "
-					+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"BeforeImage\"]/Value/text()";
-	
-					expr = xpath.compile(xpathExpression);
-					result = expr.evaluate(docGUI, XPathConstants.NODESET);
-					nodes = (NodeList) result;
-					text = nodes.item(0).getNodeValue();
-				}
-			} catch (XPathExpressionException e) {
-				GUITARLog.log.error(e);
+		    
+		    XPath xpath = XPathFactory.newInstance().newXPath();
+		    XPathExpression expr;
+		    Object result = null;
+		    NodeList nodes;
+		    String text = "";
+		    try {
+			String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+			    + "Value=\"" + sWidgetID + "\"]]/Property[Name=\"Image\"]/Value/text()";			
+			expr = xpath.compile(xpathExpression);
+			result = expr.evaluate(docGUI, XPathConstants.NODESET);
+			nodes = (NodeList) result;
+			if (nodes.getLength() > 0)
+			    text = nodes.item(0).getNodeValue();
+			else{
+			    xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+				+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"BeforeImage\"]/Value/text()";
+			    
+			    expr = xpath.compile(xpathExpression);
+			    result = expr.evaluate(docGUI, XPathConstants.NODESET);
+			    nodes = (NodeList) result;
+			    text = nodes.item(0).getNodeValue();
 			}
-			Screen s = new Screen();
-	
+		    } catch (XPathExpressionException e) {
+			GUITARLog.log.error(e);
+		    }
+		    Screen s = new Screen();
+		    
+		    try{
+			Pattern pat = new Pattern(text);
+			pat = pat.similar(FUZZINESS);
+			
+			s.find(pat);
+			s.click(pat,0);
+		    }	
+		    //It's possible the component just isn't here, but try the AfterImage, if it exists
+		    catch(FindFailed e){
+			System.out.println("Failed to find before image. Trying After.");
 			try{
-				Pattern pat = new Pattern(text);
-				pat = pat.similar(FUZZINESS);
-	
-				s.find(pat);
-				s.click(pat,0);
-			}	
-			//It's possible the component just isn't here, but try the AfterImage, if it exists
-			catch(FindFailed e){
-				System.out.println("Failed to find before image. Trying After.");
-				try{
-					String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
-					+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"AfterImage\"]/Value/text()";
-					expr = xpath.compile(xpathExpression);
-					result = expr.evaluate(docGUI, XPathConstants.NODESET);
-				} catch (XPathExpressionException ex) {
-					GUITARLog.log.error(ex);
-				}
-				nodes = (NodeList) result;
-				if(nodes.getLength() > 0)
-					text = nodes.item(0).getNodeValue();
-				else{
-					GUITARLog.log.error("Component ID not found");
-					throw new ComponentNotFound(sWidgetID);
-				}
-				s = new Screen();
-	
-				try{
-					Pattern pat = new Pattern(text);
-					pat = pat.similar(FUZZINESS);
-	
-					s.find(pat);
-					s.click(pat,0);
-				}
-				//now this is truly screwed.
-				catch(FindFailed ex){
-					GUITARLog.log.error("Component ID not found");
-					throw new ComponentNotFound(sWidgetID);
-				}
+			    String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+				+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"AfterImage\"]/Value/text()";
+			    expr = xpath.compile(xpathExpression);
+			    result = expr.evaluate(docGUI, XPathConstants.NODESET);
+			} catch (XPathExpressionException ex) {
+			    GUITARLog.log.error(ex);
 			}
+			nodes = (NodeList) result;
+			if(nodes.getLength() > 0)
+			    text = nodes.item(0).getNodeValue();
+			else{
+			    GUITARLog.log.error("Component ID not found");
+			    throw new ComponentNotFound(sWidgetID);
+			}
+			s = new Screen();
+			
+			try{
+			    Pattern pat = new Pattern(text);
+			    pat = pat.similar(FUZZINESS);
+			    
+			    s.find(pat);
+			    s.click(pat,0);
+			}
+			//now this is truly screwed.
+			catch(FindFailed ex){
+			    GUITARLog.log.error("Component ID not found");
+			    throw new ComponentNotFound(sWidgetID);
+			}
+		    }
 		}
 		TestStepEndEventArgs stepEndArgs;
 		if (gComponent == null){
-		stepEndArgs = new TestStepEndEventArgs(step,
-		null, gWindow.extractGUIProperties());
+		    stepEndArgs = new TestStepEndEventArgs(step,
+							   null, gWindow.extractGUIProperties());
 		}else{
-		stepEndArgs = new TestStepEndEventArgs(step,
-		gComponent.extractProperties(), gWindow.extractGUIProperties());
+		    stepEndArgs = new TestStepEndEventArgs(step,
+							   gComponent.extractProperties(), gWindow.extractGUIProperties());
 		}
 		// -----------------------
 		// Monitor after step
 		for (GTestMonitor aTestMonitor : lTestMonitor) {
-			aTestMonitor.afterStep(stepEndArgs);
+		    aTestMonitor.afterStep(stepEndArgs);
 		}
 	}
-
+    
 	/**
 	 * Get container window
 	 * 
