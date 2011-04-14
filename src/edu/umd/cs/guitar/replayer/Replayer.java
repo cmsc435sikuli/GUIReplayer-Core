@@ -376,11 +376,11 @@ public class Replayer {
 				gEvent.perform(gComponent, parameters, optionalValues);
 			}
 		    }
-		    else if(mode == 1)//end gComponent != null
+		    else if(mode >= 1)//end gComponent != null
 			guitarFailed = true;
 		    else throw new ComponentNotFound(sWidgetID);
 		    
-		}else if (mode == 1) //end comp = null
+		}else if (mode >= 1) //end comp = null
 		    guitarFailed = true;
 		else
 		    throw new ComponentNotFound(sWidgetID);
@@ -418,7 +418,7 @@ public class Replayer {
 		    try{
 			Pattern pat = new Pattern(text);
 			pat = pat.similar(FUZZINESS);
-			
+			GUITARLog.log.info("Clicking on image " + text);
 			s.find(pat);
 			s.click(pat,0);
 		    }	
@@ -445,7 +445,7 @@ public class Replayer {
 			try{
 			    Pattern pat = new Pattern(text);
 			    pat = pat.similar(FUZZINESS);
-			    
+			    GUITARLog.log.info("Clicking on image " + text);
 			    s.find(pat);
 			    s.click(pat,0);
 			}
