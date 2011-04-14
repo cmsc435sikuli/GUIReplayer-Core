@@ -84,9 +84,11 @@ public abstract class ReplayerMain {
 	} 
 	catch (GException e) {
             GUITARLog.log.error("GUITAR Exception thrown", e);
+		failures++;
         } catch (Exception e) {
             GUITARLog.log.error("Exception thrown", e);
-        } finally {
+		failures++;        
+	} finally {
             // Elapsed time
             long nEndTime = System.currentTimeMillis();
             long duration = nEndTime - individualStartTime;
