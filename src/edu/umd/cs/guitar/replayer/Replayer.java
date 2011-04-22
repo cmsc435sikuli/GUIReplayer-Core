@@ -65,6 +65,7 @@ import edu.umd.cs.guitar.util.GUITARLog;
 
 import org.sikuli.script.*;
 import java.awt.*;
+import java.io.File;
 
 /*
  * 
@@ -334,9 +335,10 @@ public class Replayer {
 								       .getDComponentType());
 		    List<PropertyTypeWrapper> IDAdapter = new ArrayList<PropertyTypeWrapper>();
 		    
-		    for (PropertyType p : ID)
+		    for (PropertyType p : ID){
+			//System.out.println(p.getName() + ": " + p.getValue()); 			
 			IDAdapter.add(new PropertyTypeWrapper(p));
-		    
+		    }
 		    
 		    GComponent containter = gWindow.getContainer();
 		    GUITARLog.log.info("Finding widget *" + sWidgetID + "*....");
@@ -384,6 +386,9 @@ public class Replayer {
 		    guitarFailed = true;
 		else
 		    throw new ComponentNotFound(sWidgetID);
+
+		//if(mode == 0 || (mode == 1 && !guitarFailed)){		
+
 		//Mode = 1 : use Sikuli if guitar fails 
 		//Mode = 2 : use Sikuli
 		if (mode == 2 || (mode == 1 && guitarFailed)){
@@ -408,7 +413,12 @@ public class Replayer {
 			    expr = xpath.compile(xpathExpression);
 			    result = expr.evaluate(docGUI, XPathConstants.NODESET);
 			    nodes = (NodeList) result;
+			if (nodes.getLength() > 0)
 			    text = nodes.item(0).getNodeValue();
+			else{
+				GUITARLog.log.error("No corresponding image file found for " + sWidgetID);
+				throw new ComponentNotFound();
+			}
 			}
 		    } catch (XPathExpressionException e) {
 			GUITARLog.log.error(e);
@@ -416,6 +426,12 @@ public class Replayer {
 		    Screen s = new Screen();
 		    
 		    try{
+			File f = new File(text);
+			//File is not legal
+			if(!f.isFile()){
+				GUITARLog.log.error("No corresponding image file found for " + sWidgetID);
+				throw new ComponentNotFound();
+			}
 			Pattern pat = new Pattern(text);
 			pat = pat.similar(FUZZINESS);
 			GUITARLog.log.info("Clicking on image " + text);
@@ -456,19 +472,18 @@ public class Replayer {
 			}
 		    }
 		}
+
+
 		TestStepEndEventArgs stepEndArgs;
-		if (gComponent == null){
-		    stepEndArgs = new TestStepEndEventArgs(step,
-							   null, gWindow.extractGUIProperties());
-		}else{
+
 		    stepEndArgs = new TestStepEndEventArgs(step,
 							   gComponent.extractProperties(), gWindow.extractGUIProperties());
-		}
 		// -----------------------
 		// Monitor after step
 		for (GTestMonitor aTestMonitor : lTestMonitor) {
 		    aTestMonitor.afterStep(stepEndArgs);
 		}
+
 	}
     
 	/**
