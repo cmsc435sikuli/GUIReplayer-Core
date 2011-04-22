@@ -292,6 +292,7 @@ public class Replayer {
 
 		List<EventType> lEvents = efg.getEvents().getEvent();
 
+		//get info from the EFG
 		for (EventType event : lEvents) {
 		    String eventID = event.getEventId();
 		    if (sEventID.equals(eventID)) {
@@ -300,6 +301,7 @@ public class Replayer {
 		    }
 		}
 		
+		//checkk for errors
 		if (sWidgetID == null) {
 		    GUITARLog.log.error("Component ID not found");
 		    throw new ComponentNotFound(sEventID);
@@ -328,6 +330,8 @@ public class Replayer {
 		ComponentTypeWrapper comp = guiStructureAdapter
 		    .getComponentFromID(sWidgetID);
 		
+		//Let GUITAR try to find the widget the way it always did (black magic as far as I'm concerned because I didn't read any more of this than I absolutely had to)
+		//FAIL if it can't find a widget
 		GComponent gComponent = null;
 		if (comp != null){
 		    
@@ -387,10 +391,11 @@ public class Replayer {
 		else
 		    throw new ComponentNotFound(sWidgetID);
 
-		//if(mode == 0 || (mode == 1 && !guitarFailed)){		
-
 		//Mode = 1 : use Sikuli if guitar fails 
 		//Mode = 2 : use Sikuli
+
+		//This is where we start using sikuli. The following code will always get executed in mode 2
+		//and it will also run if vanilla guitar can't find a widget in mode 1.
 		if (mode == 2 || (mode == 1 && guitarFailed)){
 		    
 		    XPath xpath = XPathFactory.newInstance().newXPath();
@@ -399,6 +404,7 @@ public class Replayer {
 		    NodeList nodes;
 		    String text = "";
 		    try {
+			//getting image file names from the gui file if it exists
 			String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
 			    + "Value=\"" + sWidgetID + "\"]]/Property[Name=\"Image\"]/Value/text()";			
 			expr = xpath.compile(xpathExpression);
@@ -426,16 +432,20 @@ public class Replayer {
 		    Screen s = new Screen();
 		    
 		    try{
+			//get the image file if possible
 			File f = new File(text);
 			//File is not legal
 			if(!f.isFile()){
 				GUITARLog.log.error("No corresponding image file found for " + sWidgetID);
 				throw new ComponentNotFound();
 			}
+			//make a pattern for sikuli to find
 			Pattern pat = new Pattern(text);
 			pat = pat.similar(FUZZINESS);
 			GUITARLog.log.info("Clicking on image " + text);
+			//find it if it exists
 			s.find(pat);
+			//click that shit
 			s.click(pat,0);
 		    }	
 		    //It's possible the component just isn't here, but try the AfterImage, if it exists
