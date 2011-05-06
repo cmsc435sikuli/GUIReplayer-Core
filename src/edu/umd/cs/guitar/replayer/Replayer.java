@@ -412,7 +412,6 @@ public class Replayer {
 		    } catch (XPathExpressionException e) {
 			GUITARLog.log.error(e);
 		    }
-		    Screen s = new Screen();
 		    
 			//get the image file if possible
 			File f = new File(text);
@@ -422,7 +421,7 @@ public class Replayer {
 				throw new ComponentNotFound();
 			}
 		    //It's possible the component just isn't here, but try the AfterImage, if it exists
-		    if(!findAndClickImage(s, text)){
+		    if(!findAndClickImage(text)){
 			System.out.println("Failed to find before image. Trying After.");
 			try{
 				text = getImageFileName(sWidgetID, "AfterImage");
@@ -433,9 +432,8 @@ public class Replayer {
 			} catch (XPathExpressionException ex) {
 			    GUITARLog.log.error(ex);
 			}
-			s = new Screen();
 			
-			if (!findAndClickImage(s, text)){
+			if (!findAndClickImage(text)){
 			    GUITARLog.log.error("Component ID not found");
 			    throw new ComponentNotFound(sWidgetID);
 			}
@@ -462,23 +460,26 @@ public class Replayer {
 		XPathExpression expr;
 		Object result = null;
 
-		String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
-			    + "Value=\"" + sWidgetID + "\"]]/Property[Name=\""+imageType+"\"]/Value/text()";			
-		expr = xpath.compile(xpathExpression);
-		result = expr.evaluate(docGUI, XPathConstants.NODESET);
-		nodes = (NodeList) result;
-		if (nodes.getLength() > 0)
-		    imageFileName = nodes.item(0).getNodeValue();
+		if (imageType.equals("Image") || imageType.equals("BeforeImage") || imageType.equals("AfterImage")){
+			String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+				    + "Value=\"" + sWidgetID + "\"]]/Property[Name=\""+imageType+"\"]/Value/text()";			
+			expr = xpath.compile(xpathExpression);
+			result = expr.evaluate(docGUI, XPathConstants.NODESET);
+			nodes = (NodeList) result;
+			if (nodes.getLength() > 0)
+			    imageFileName = nodes.item(0).getNodeValue();
+		}
 		return imageFileName;
 	}
 
-	public boolean findAndClickImage(Screen s, String imageFileName){
+	public boolean findAndClickImage(String imageFileName){
+		Screen s = new Screen();
 		try {
 			Pattern pat = new Pattern(imageFileName);
 			pat = pat.similar(FUZZINESS);
 			//find it if it exists
 			s.find(pat);
-			//click that shit
+			//click it
 			s.click(pat, 0);
 			return true;
 		} catch (FindFailed e){
