@@ -398,40 +398,22 @@ public class Replayer {
 		//and it will also run if vanilla guitar can't find a widget in mode 1.
 		if (mode == 2 || (mode == 1 && guitarFailed)){
 		    
-		    XPath xpath = XPathFactory.newInstance().newXPath();
-		    XPathExpression expr;
-		    Object result = null;
-		    NodeList nodes;
 		    String text = "";
 		    try {
 			//getting image file names from the gui file if it exists
-			String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
-			    + "Value=\"" + sWidgetID + "\"]]/Property[Name=\"Image\"]/Value/text()";			
-			expr = xpath.compile(xpathExpression);
-			result = expr.evaluate(docGUI, XPathConstants.NODESET);
-			nodes = (NodeList) result;
-			if (nodes.getLength() > 0)
-			    text = nodes.item(0).getNodeValue();
-			else{
-			    xpathExpression = "//Attributes[Property[Name=\"ID\" and "
-				+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"BeforeImage\"]/Value/text()";
-			    
-			    expr = xpath.compile(xpathExpression);
-			    result = expr.evaluate(docGUI, XPathConstants.NODESET);
-			    nodes = (NodeList) result;
-			if (nodes.getLength() > 0)
-			    text = nodes.item(0).getNodeValue();
-			else{
-				GUITARLog.log.error("No corresponding image file found for " + sWidgetID);
-				throw new ComponentNotFound();
-			}
+			text = getImageFileName(sWidgetID, "Image");
+			if (text == null){
+				text = getImageFileName(sWidgetID, "BeforeImage");
+				if (text == null){
+					GUITARLog.log.error("No corresponding image file found for " + sWidgetID);
+					throw new ComponentNotFound();
+				}
 			}
 		    } catch (XPathExpressionException e) {
 			GUITARLog.log.error(e);
 		    }
 		    Screen s = new Screen();
 		    
-		    try{
 			//get the image file if possible
 			File f = new File(text);
 			//File is not legal
@@ -439,44 +421,21 @@ public class Replayer {
 				GUITARLog.log.error("No corresponding image file found for " + sWidgetID);
 				throw new ComponentNotFound();
 			}
-			//make a pattern for sikuli to find
-			Pattern pat = new Pattern(text);
-			pat = pat.similar(FUZZINESS);
-			GUITARLog.log.info("Clicking on image " + text);
-			//find it if it exists
-			s.find(pat);
-			//click that shit
-			s.click(pat,0);
-		    }	
 		    //It's possible the component just isn't here, but try the AfterImage, if it exists
-		    catch(FindFailed e){
+		    if(!findAndClickImage(s, text)){
 			System.out.println("Failed to find before image. Trying After.");
 			try{
-			    String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
-				+ "Value=\"" + sWidgetID + "\"]]/Property[Name=\"AfterImage\"]/Value/text()";
-			    expr = xpath.compile(xpathExpression);
-			    result = expr.evaluate(docGUI, XPathConstants.NODESET);
+				text = getImageFileName(sWidgetID, "AfterImage");
+				if (text == null){
+			    		GUITARLog.log.error("Component ID not found");
+			    		throw new ComponentNotFound(sWidgetID);
+				}
 			} catch (XPathExpressionException ex) {
 			    GUITARLog.log.error(ex);
 			}
-			nodes = (NodeList) result;
-			if(nodes.getLength() > 0)
-			    text = nodes.item(0).getNodeValue();
-			else{
-			    GUITARLog.log.error("Component ID not found");
-			    throw new ComponentNotFound(sWidgetID);
-			}
 			s = new Screen();
 			
-			try{
-			    Pattern pat = new Pattern(text);
-			    pat = pat.similar(FUZZINESS);
-			    GUITARLog.log.info("Clicking on image " + text);
-			    s.find(pat);
-			    s.click(pat,0);
-			}
-			//now this is truly screwed.
-			catch(FindFailed ex){
+			if (!findAndClickImage(s, text)){
 			    GUITARLog.log.error("Component ID not found");
 			    throw new ComponentNotFound(sWidgetID);
 			}
@@ -492,6 +451,38 @@ public class Replayer {
 		// Monitor after step
 		for (GTestMonitor aTestMonitor : lTestMonitor) {
 		    aTestMonitor.afterStep(stepEndArgs);
+		}
+
+	}
+
+	public String getImageFileName(String sWidgetID, String imageType) throws XPathExpressionException{
+		XPath xpath = XPathFactory.newInstance().newXPath();
+		String imageFileName = null;
+		NodeList nodes;
+		XPathExpression expr;
+		Object result = null;
+
+		String xpathExpression = "//Attributes[Property[Name=\"ID\" and "
+			    + "Value=\"" + sWidgetID + "\"]]/Property[Name=\""+imageType+"\"]/Value/text()";			
+		expr = xpath.compile(xpathExpression);
+		result = expr.evaluate(docGUI, XPathConstants.NODESET);
+		nodes = (NodeList) result;
+		if (nodes.getLength() > 0)
+		    imageFileName = nodes.item(0).getNodeValue();
+		return imageFileName;
+	}
+
+	public boolean findAndClickImage(Screen s, String imageFileName){
+		try {
+			Pattern pat = new Pattern(imageFileName);
+			pat = pat.similar(FUZZINESS);
+			//find it if it exists
+			s.find(pat);
+			//click that shit
+			s.click(pat, 0);
+			return true;
+		} catch (FindFailed e){
+			return false;
 		}
 
 	}
