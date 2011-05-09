@@ -452,6 +452,15 @@ public class Replayer {
 		}
 
 	}
+/**
+	 * Get an image's filename.
+	 * 
+	 * <p>
+	 * 
+	 * @param sWidgetID
+	 * @param imageType
+	 * @throws XPathExpressionException
+	 */
 
 	public String getImageFileName(String sWidgetID, String imageType) throws XPathExpressionException{
 		XPath xpath = XPathFactory.newInstance().newXPath();
@@ -471,6 +480,13 @@ public class Replayer {
 		}
 		return imageFileName;
 	}
+/**
+	 * Find an image on screen and click.
+	 * 
+	 * <p>
+	 * 
+	 * @param imageFileName
+	 */
 
 	public boolean findAndClickImage(String imageFileName){
 		Screen s = new Screen();
